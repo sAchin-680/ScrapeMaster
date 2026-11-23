@@ -60,7 +60,7 @@ async function TrendingContent({ region }: { region: Region }) {
               }
               badge={
                 item.rank && item.rank <= 10 ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-semibold text-neutral-900 shadow-sm">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-semibold text-neutral-900 shadow-xs">
                     <Crown className="size-3" aria-hidden />#{item.rank} Bestseller
                   </span>
                 ) : undefined

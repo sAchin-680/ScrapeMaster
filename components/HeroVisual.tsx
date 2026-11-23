@@ -43,7 +43,7 @@ export default function HeroVisual({ product }: { product: Product | null }) {
   return (
     <div className="relative mx-auto w-full max-w-lg">
       <div
-        className="absolute -inset-8 -z-10 rounded-[3rem] bg-gradient-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
+        className="absolute -inset-8 -z-10 rounded-[3rem] bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
         aria-hidden
       />
 

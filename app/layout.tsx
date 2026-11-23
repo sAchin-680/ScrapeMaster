@@ -23,14 +23,14 @@ import './globals.css';
 
 const sans = localFont({
   src: './fonts/GeistVF.woff',
-  variable: '--font-sans',
+  variable: '--font-geist-sans',
   weight: '100 900',
   display: 'swap',
 });
 
 const mono = localFont({
   src: './fonts/GeistMonoVF.woff',
-  variable: '--font-mono',
+  variable: '--font-geist-mono',
   weight: '100 900',
   display: 'swap',
 });

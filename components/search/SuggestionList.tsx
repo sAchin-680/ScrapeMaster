@@ -57,7 +57,7 @@ export default function SuggestionList({
             // Keep focus in the input so the list doesn't close before the click lands.
             onMouseDown={(e) => e.preventDefault()}
             onClick={onClearRecent}
-            className="rounded px-1.5 py-0.5 hover:bg-paper hover:text-ink"
+            className="rounded-sm px-1.5 py-0.5 hover:bg-paper hover:text-ink"
           >
             Clear
           </button>

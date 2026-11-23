@@ -15,7 +15,7 @@ import {
 import { usePreferences } from './PreferencesProvider';
 
 const selectClass =
-  'w-full appearance-none rounded-lg border border-line bg-surface px-3 py-2.5 pr-9 text-sm outline-none transition focus:border-accent/60 focus:ring-4 focus:ring-accent/10';
+  'w-full appearance-none rounded-lg border border-line bg-surface px-3 py-2.5 pr-9 text-sm outline-hidden transition focus:border-accent/60 focus:ring-4 focus:ring-accent/10';
 
 export default function LocaleSwitcher() {
   const { preferences } = usePreferences();
@@ -24,7 +24,7 @@ export default function LocaleSwitcher() {
   return (
     <Popover className="relative">
       <PopoverButton
-        className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm text-muted transition hover:bg-paper hover:text-ink data-[open]:bg-paper data-[open]:text-ink"
+        className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm text-muted transition hover:bg-paper hover:text-ink data-open:bg-paper data-open:text-ink"
         aria-label={`Region ${current.name}, currency ${preferences.currency === 'original' ? 'store currency' : preferences.currency}`}
       >
         <span aria-hidden>{current.flag}</span>
@@ -37,7 +37,7 @@ export default function LocaleSwitcher() {
       <PopoverPanel
         transition
         anchor={{ to: 'bottom end', gap: 8 }}
-        className="card z-50 w-[min(20rem,calc(100vw-2rem))] p-4 shadow-xl transition duration-150 data-[closed]:-translate-y-1 data-[closed]:opacity-0"
+        className="card z-50 w-[min(20rem,calc(100vw-2rem))] p-4 shadow-xl transition duration-150 data-closed:-translate-y-1 data-closed:opacity-0"
       >
         {({ close }) => <LocaleForm close={close} />}
       </PopoverPanel>

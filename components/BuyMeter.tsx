@@ -16,7 +16,7 @@ export default function BuyMeter({ verdict }: { verdict: DealVerdict }) {
       {verdict.level !== 'new' && (
         <div className="mt-5">
           <div
-            className="relative h-2 rounded-full bg-gradient-to-r from-up/70 via-amber-400/70 to-down/80"
+            className="relative h-2 rounded-full bg-linear-to-r from-up/70 via-amber-400/70 to-down/80"
             role="meter"
             aria-valuemin={0}
             aria-valuemax={100}
@@ -24,7 +24,7 @@ export default function BuyMeter({ verdict }: { verdict: DealVerdict }) {
             aria-label="Deal score"
           >
             <span
-              className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-ink shadow"
+              className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-ink shadow-sm"
               style={{ left: `${verdict.score}%` }}
             />
           </div>

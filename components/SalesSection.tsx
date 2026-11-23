@@ -172,7 +172,7 @@ export default function SalesSection({ country, sales, signals, checked }: Props
     <section className="container py-16" aria-labelledby="sales-heading">
       <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-10">
         <div
-          className="absolute -right-24 -top-24 size-72 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/10 blur-3xl"
+          className="absolute -right-24 -top-24 size-72 rounded-full bg-linear-to-br from-indigo-500/20 to-violet-500/10 blur-3xl"
           aria-hidden
         />
         <div className="relative grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">

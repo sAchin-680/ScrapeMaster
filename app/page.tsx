@@ -93,7 +93,7 @@ export default async function Home() {
         className="relative scroll-mt-24 overflow-hidden border-b border-line bg-surface"
       >
         <div
-          className="dot-grid absolute inset-0 -z-0 [mask-image:radial-gradient(ellipse_60%_60%_at_50%_0%,#000_30%,transparent_100%)]"
+          className="dot-grid absolute inset-0 z-0 mask-[radial-gradient(ellipse_60%_60%_at_50%_0%,#000_30%,transparent_100%)]"
           aria-hidden
         />
         <div className="container relative grid items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-28">
@@ -102,7 +102,7 @@ export default async function Home() {
             <h1 className="mt-6 text-[clamp(2.4rem,5.5vw,4rem)] font-semibold leading-[1.05] tracking-[-0.03em]">
               Track prices on any store.
               <br />
-              <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400">
+              <span className="bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400">
                 Buy at the right time.
               </span>
             </h1>

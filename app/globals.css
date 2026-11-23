@@ -1,6 +1,171 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (@media (prefers-color-scheme: dark));
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  @media (width >= --theme(--breakpoint-md)) {
+    padding-inline: 2rem;
+  }
+  @media (width >= 1280px) {
+    max-width: 1280px;
+  }
+}
+
+@theme {
+  --color-paper: rgb(var(--paper));
+  --color-surface: rgb(var(--surface));
+  --color-ink: rgb(var(--ink));
+  --color-muted: rgb(var(--muted));
+  --color-line: rgb(var(--line));
+
+  --color-accent: rgb(var(--accent));
+  --color-accent-ink: rgb(var(--accent-ink));
+  --color-accent-soft: rgb(var(--accent-soft));
+
+  --color-up: rgb(var(--up));
+  --color-down: rgb(var(--down));
+
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-xl: 0.875rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+
+  --animate-ticker: ticker 40s linear infinite;
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-draw: draw 2.4s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  --animate-pulse-dot: pulseDot 1.6s ease-in-out infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes pulseDot {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+/* Borders without an explicit color use the theme's line color, in both themes. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-line, currentcolor);
+  }
+}
+
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@utility page-enter {
+  /* Scroll-revealed content: pure CSS, off the main thread, progressive. */
+  animation: page-enter 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@utility lift {
+  /* Shared hover lift for interactive cards. */
+  @apply transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-950/[0.07] active:translate-y-0 active:duration-100;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition
+      disabled:pointer-events-none disabled:opacity-40 active:scale-[.98];
+}
+
+@utility btn-primary {
+  @apply btn bg-ink text-paper hover:bg-ink/85;
+}
+
+@utility btn-accent {
+  @apply btn bg-accent text-accent-ink shadow-xs shadow-accent/30 hover:brightness-110;
+}
+
+@utility btn-ghost {
+  @apply btn border border-line bg-surface shadow-xs hover:bg-paper;
+}
+
+@utility card {
+  @apply rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/.04)];
+}
+
+@utility eyebrow {
+  @apply text-xs font-medium text-muted;
+}
+
+@utility num {
+  @apply tabular-nums tracking-tight;
+}
+
+@utility dot-grid {
+  background-image:
+    linear-gradient(rgb(var(--line) / 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--line) / 0.7) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+@utility grain {
+  &::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@utility skeleton {
+  @apply rounded-lg;
+  background: linear-gradient(
+    90deg,
+    rgb(var(--line) / 0.6) 0%,
+    rgb(var(--line)) 50%,
+    rgb(var(--line) / 0.6) 100%
+  );
+  background-size: 200% 100%;
+  @apply animate-shimmer;
+}
+
+@utility mask-fade-x {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
 
 @layer base {
   :root {
@@ -48,7 +213,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-paper;
+    @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-paper;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -60,83 +225,6 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
-  }
-}
-
-@layer components {
-  /* Scroll-revealed content: pure CSS, off the main thread, progressive. */
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .reveal {
-        animation: reveal linear both;
-        animation-timeline: view();
-        animation-range: entry 0% entry 35%;
-      }
-    }
-  }
-
-  .page-enter {
-    animation: page-enter 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-  }
-
-  /* Shared hover lift for interactive cards. */
-  .lift {
-    @apply transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-950/[0.07] active:translate-y-0 active:duration-100;
-  }
-
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition
-      disabled:pointer-events-none disabled:opacity-40 active:scale-[.98];
-  }
-  .btn-primary {
-    @apply btn bg-ink text-paper hover:bg-ink/85;
-  }
-  .btn-accent {
-    @apply btn bg-accent text-accent-ink shadow-sm shadow-accent/30 hover:brightness-110;
-  }
-  .btn-ghost {
-    @apply btn border border-line bg-surface shadow-sm hover:bg-paper;
-  }
-
-  .card {
-    @apply rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/.04)];
-  }
-
-  .eyebrow {
-    @apply text-xs font-medium text-muted;
-  }
-
-  .num {
-    @apply tabular-nums tracking-tight;
-  }
-
-  .dot-grid {
-    background-image:
-      linear-gradient(rgb(var(--line) / 0.7) 1px, transparent 1px),
-      linear-gradient(90deg, rgb(var(--line) / 0.7) 1px, transparent 1px);
-    background-size: 48px 48px;
-  }
-
-  .grain::after {
-    content: '';
-    @apply pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-
-  .skeleton {
-    @apply rounded-lg;
-    background: linear-gradient(
-      90deg,
-      rgb(var(--line) / 0.6) 0%,
-      rgb(var(--line)) 50%,
-      rgb(var(--line) / 0.6) 100%
-    );
-    background-size: 200% 100%;
-    @apply animate-shimmer;
-  }
-
-  .mask-fade-x {
-    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
   }
 }
 

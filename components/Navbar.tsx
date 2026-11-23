@@ -6,7 +6,7 @@ import Logo from '@/components/ui/Logo';
 
 export default function Navbar() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/80 bg-surface/80 backdrop-blur-xl supports-[backdrop-filter]:bg-surface/70">
+    <header className="sticky top-0 z-40 border-b border-line/80 bg-surface/80 backdrop-blur-xl supports-backdrop-filter:bg-surface/70">
       <nav className="container flex h-16 items-center justify-between" aria-label="Main">
         <Link href="/" aria-label="ScrapeMaster home">
           <Logo />

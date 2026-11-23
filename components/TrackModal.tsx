@@ -55,12 +55,12 @@ export default function TrackModal({
       <Dialog open={open} onClose={close} className="relative z-50">
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-ink/40 backdrop-blur-sm transition duration-200 data-[closed]:opacity-0"
+          className="fixed inset-0 bg-ink/40 backdrop-blur-xs transition duration-200 data-closed:opacity-0"
         />
         <div className="fixed inset-0 flex items-end justify-center sm:items-center sm:p-4">
           <DialogPanel
             transition
-            className="card w-full max-w-md rounded-b-none p-6 shadow-2xl transition duration-300 ease-out data-[closed]:translate-y-8 data-[closed]:opacity-0 sm:rounded-2xl sm:data-[closed]:scale-95 sm:data-[closed]:translate-y-0"
+            className="card w-full max-w-md rounded-b-none p-6 shadow-2xl transition duration-300 ease-out data-closed:translate-y-8 data-closed:opacity-0 sm:rounded-2xl sm:data-closed:scale-95 sm:data-closed:translate-y-0"
           >
             <div className="flex items-start justify-between gap-4">
               <span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-ink">
@@ -115,7 +115,7 @@ export default function TrackModal({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@example.com"
-                      className="min-w-0 flex-1 bg-transparent py-3 text-[15px] outline-none"
+                      className="min-w-0 flex-1 bg-transparent py-3 text-[15px] outline-hidden"
                     />
                   </div>
                   {status.type === 'error' && (

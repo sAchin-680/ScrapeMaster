@@ -47,7 +47,7 @@ export default function AnnouncementBar({ items }: { items: Announcement[] }) {
   };
 
   return (
-    <div className="relative bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 text-white">
+    <div className="relative bg-linear-to-r from-indigo-600 via-violet-600 to-indigo-600 text-white">
       <div className="container flex min-h-10 items-center justify-center gap-2 py-2 pr-10 text-center text-[13px]">
         <Megaphone className="hidden size-4 shrink-0 opacity-80 sm:block" aria-hidden />
         <p key={item.id} className="animate-rise" aria-live="polite">

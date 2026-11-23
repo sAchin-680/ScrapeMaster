@@ -80,15 +80,15 @@ export default function ProductTile(props: Props) {
           <StoreLogo
             url={store.url}
             name={store.name}
-            className="absolute left-2 top-2 size-7 shadow-sm ring-black/5"
+            className="absolute left-2 top-2 size-7 shadow-xs ring-black/5"
           />
           {discount > 0 && (
-            <span className="num absolute right-2 top-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+            <span className="num absolute right-2 top-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-xs">
               −{discount}%
             </span>
           )}
           {outOfStock && (
-            <span className="absolute inset-x-2 bottom-2 rounded-md bg-neutral-900/80 py-1 text-center text-xs font-medium text-white backdrop-blur">
+            <span className="absolute inset-x-2 bottom-2 rounded-md bg-neutral-900/80 py-1 text-center text-xs font-medium text-white backdrop-blur-sm">
               Out of stock
             </span>
           )}
@@ -107,7 +107,7 @@ export default function ProductTile(props: Props) {
               </span>
             )}
           </p>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug transition-colors group-hover:text-accent">
+          <h3 className="line-clamp-2 min-h-10 text-sm font-medium leading-snug transition-colors group-hover:text-accent">
             {title}
           </h3>
           {stars > 0 && (

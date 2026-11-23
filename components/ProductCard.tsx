@@ -46,7 +46,7 @@ export default function ProductCard({
       }
       badge={
         verdict.level === 'great' || verdict.level === 'good' ? (
-          <DealBadge verdict={verdict} className="shadow-sm" />
+          <DealBadge verdict={verdict} className="shadow-xs" />
         ) : undefined
       }
       aside={
