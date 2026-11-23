@@ -105,7 +105,7 @@ export default async function Home() {
         />
 
         <div className="container relative grid grid-cols-1 items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
-          <div className="flex animate-rise flex-col items-start">
+          <div className="flex flex-col items-start">
             <div className="flex flex-wrap items-center gap-2">
               <LiveBadge />
               {liveStores > 0 && (
@@ -182,7 +182,7 @@ export default async function Home() {
           <div className="grid grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4">
             {products.map((product, i) => (
               <div key={product._id} className="reveal">
-                <ProductCard product={product} priority={i < 4} />
+                <ProductCard product={product} preload={i < 4} />
               </div>
             ))}
           </div>
