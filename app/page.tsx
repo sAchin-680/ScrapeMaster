@@ -143,6 +143,8 @@ export default async function Home() {
                 <Link
                   key={example}
                   href={`/search?q=${encodeURIComponent(example)}`}
+                  // A search queries the stores live; never start one speculatively.
+                  prefetch={false}
                   className="rounded-full border border-line bg-surface/60 px-2.5 py-1 text-ink/80 transition hover:border-accent/40 hover:text-accent"
                 >
                   {example}
