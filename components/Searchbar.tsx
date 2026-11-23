@@ -139,8 +139,8 @@ export default function Searchbar({ defaultValue = '' }: { defaultValue?: string
     <form onSubmit={submit} className="w-full" noValidate>
       <div
         className={cn(
-          'group relative flex items-center gap-2 rounded-xl border bg-surface p-1.5 shadow-xs transition focus-within:ring-4 focus-within:ring-accent/10',
-          error ? 'border-up/60' : 'border-line focus-within:border-accent/60',
+          'glass glow-border group relative flex items-center gap-2 rounded-2xl p-1.5 transition focus-within:ring-4 focus-within:ring-accent/10',
+          error ? 'border-up/60' : 'focus-within:border-accent/40',
         )}
       >
         <Search className="ml-2 size-5 shrink-0 text-muted" aria-hidden />

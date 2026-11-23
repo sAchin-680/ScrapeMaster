@@ -66,6 +66,7 @@ export default async function Home() {
   const sales = filterSalesFor(activeSales, country.code);
   const region = regionForCountry(country.code);
   const deals = localDeals.length ? localDeals : await getTopDeals(null);
+  const liveStores = reliability.filter((store) => store.status === 'operational').length;
 
   // Feature the best current deal, else the product with the most recorded history.
   const spotlight =
@@ -88,23 +89,36 @@ export default async function Home() {
       <HashScroll />
       <Ticker products={products} />
 
-      <section
-        id="track"
-        className="relative scroll-mt-24 overflow-hidden border-b border-line bg-surface"
-      >
+      <section id="track" className="relative scroll-mt-24 overflow-hidden">
         <div
-          className="dot-grid absolute inset-0 z-0 mask-[radial-gradient(ellipse_60%_60%_at_50%_0%,#000_30%,transparent_100%)]"
+          className="dot-grid absolute inset-0 -z-10 mask-[radial-gradient(ellipse_70%_60%_at_50%_0%,#000_20%,transparent_100%)]"
           aria-hidden
         />
-        <div className="container relative grid items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-28">
+        {/* Horizon glow under the hero. */}
+        <div
+          className="absolute inset-x-0 bottom-0 -z-10 h-px bg-linear-to-r from-transparent via-accent/50 to-transparent"
+          aria-hidden
+        />
+        <div
+          className="absolute inset-x-[15%] -bottom-24 -z-10 h-48 rounded-full bg-accent/15 blur-3xl"
+          aria-hidden
+        />
+
+        <div className="container relative grid items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
           <div className="flex animate-rise flex-col items-start">
-            <LiveBadge />
-            <h1 className="mt-6 text-[clamp(2.4rem,5.5vw,4rem)] font-semibold leading-[1.05] tracking-[-0.03em]">
+            <div className="flex flex-wrap items-center gap-2">
+              <LiveBadge />
+              {liveStores > 0 && (
+                <span className="glass inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-muted">
+                  <span className="num font-semibold text-ink">{liveStores}</span>
+                  {liveStores === 1 ? 'store' : 'stores'} reporting live prices
+                </span>
+              )}
+            </div>
+            <h1 className="mt-6 text-[clamp(2.4rem,5.2vw,4rem)] font-semibold leading-[1.04] tracking-[-0.035em]">
               Track prices on any store.
               <br />
-              <span className="bg-linear-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent dark:from-indigo-400 dark:to-violet-400">
-                Buy at the right time.
-              </span>
+              <span className="text-gradient">Buy at the right time.</span>
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
               Search a product to compare live prices on Amazon, Flipkart and more, or
@@ -116,15 +130,15 @@ export default async function Home() {
               <Searchbar />
             </div>
 
-            <dl className="mt-8 grid w-full max-w-xl grid-cols-3 divide-x divide-line rounded-xl border border-line bg-paper/60">
+            <dl className="glass mt-8 grid w-full max-w-xl grid-cols-3 divide-x divide-line/70 rounded-2xl">
               {[
                 ['Products tracked', stats.products],
                 ['Price snapshots', stats.datapoints],
                 ['Active watchers', stats.watchers],
               ].map(([label, value]) => (
-                <div key={label} className="px-4 py-3">
+                <div key={label} className="px-4 py-3.5">
                   <dt className="text-xs text-muted">{label}</dt>
-                  <dd className="num mt-0.5 text-xl font-semibold">
+                  <dd className="num glow mt-0.5 text-2xl font-semibold">
                     {formatNumber(Number(value))}
                   </dd>
                 </div>

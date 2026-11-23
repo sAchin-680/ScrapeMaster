@@ -14,7 +14,7 @@ const H = 140;
 export default function HeroVisual({ product }: { product: Product | null }) {
   if (!product) {
     return (
-      <div className="card mx-auto flex w-full max-w-lg flex-col items-center gap-3 p-10 text-center shadow-xl shadow-indigo-950/5">
+      <div className="glass mx-auto flex w-full max-w-lg flex-col items-center gap-3 rounded-3xl p-10 text-center">
         <span className="grid size-12 place-items-center rounded-xl bg-accent-soft text-accent">
           <Search className="size-6" aria-hidden />
         </span>
@@ -43,13 +43,13 @@ export default function HeroVisual({ product }: { product: Product | null }) {
   return (
     <div className="relative mx-auto w-full max-w-lg">
       <div
-        className="absolute -inset-8 -z-10 rounded-[3rem] bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
+        className="absolute -inset-8 -z-10 rounded-[3rem] bg-linear-to-tr from-indigo-500/25 via-violet-500/15 to-sky-400/25 blur-3xl"
         aria-hidden
       />
 
       <Link
         href={`/products/${product._id}`}
-        className="card group block p-6 shadow-xl shadow-indigo-950/5 transition hover:border-accent/40"
+        className="glass shine group block rounded-3xl p-6 transition hover:border-accent/40"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
@@ -69,7 +69,7 @@ export default function HeroVisual({ product }: { product: Product | null }) {
                 productId={product._id}
                 price={product.currentPrice}
                 currency={product.currency}
-                className="text-2xl font-semibold"
+                className="glow text-2xl font-semibold"
               />
             </div>
           </div>
@@ -101,9 +101,37 @@ export default function HeroVisual({ product }: { product: Product | null }) {
         >
           <defs>
             <linearGradient id="hero-fill" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0" stopColor="rgb(var(--accent))" stopOpacity=".22" />
+              <stop offset="0" stopColor="rgb(var(--accent))" stopOpacity=".26" />
               <stop offset="1" stopColor="rgb(var(--accent))" stopOpacity="0" />
             </linearGradient>
+            {/* User-space units: a flat line has a zero-height bounding box,
+                which would hide a bounding-box gradient or filter. */}
+            <linearGradient
+              id="hero-line"
+              gradientUnits="userSpaceOnUse"
+              x1="0"
+              x2={W}
+              y1="0"
+              y2="0"
+            >
+              <stop offset="0" stopColor="rgb(var(--accent-3))" />
+              <stop offset=".5" stopColor="rgb(var(--accent))" />
+              <stop offset="1" stopColor="rgb(var(--accent-2))" />
+            </linearGradient>
+            <filter
+              id="hero-glow"
+              filterUnits="userSpaceOnUse"
+              x={-20}
+              y={-20}
+              width={W + 40}
+              height={H + 40}
+            >
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
           {[35, 70, 105].map((y) => (
             <line
@@ -120,9 +148,10 @@ export default function HeroVisual({ product }: { product: Product | null }) {
           <path
             d={toPath(points)}
             fill="none"
-            stroke="rgb(var(--accent))"
+            stroke="url(#hero-line)"
             strokeWidth="2.5"
             strokeLinecap="round"
+            filter="url(#hero-glow)"
             pathLength={1}
             strokeDasharray="1"
             strokeDashoffset="1"
@@ -150,7 +179,7 @@ export default function HeroVisual({ product }: { product: Product | null }) {
           {stats.map(([label, value]) => (
             <div
               key={label}
-              className="rounded-lg bg-paper px-3 py-2.5 ring-1 ring-line/60"
+              className="rounded-xl bg-paper/60 px-3 py-2.5 ring-1 ring-line/60"
             >
               <dt className="text-xs text-muted">{label}</dt>
               <dd className="num mt-0.5 font-semibold">
@@ -161,7 +190,7 @@ export default function HeroVisual({ product }: { product: Product | null }) {
         </dl>
       </Link>
 
-      <div className="card absolute -bottom-6 -left-4 flex items-center gap-3 p-3 pr-5 shadow-lg sm:-left-10">
+      <div className="glass absolute top-[26%] -left-4 flex animate-float items-center gap-3 rounded-2xl p-3 pr-5 sm:-left-12">
         <span className="grid size-9 place-items-center rounded-lg bg-accent-soft text-accent">
           <BellRing className="size-4" aria-hidden />
         </span>
