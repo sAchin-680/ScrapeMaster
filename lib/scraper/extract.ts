@@ -9,14 +9,11 @@ export function parsePrice(raw: string) {
 
   const lastComma = cleaned.lastIndexOf(',');
   const lastDot = cleaned.lastIndexOf('.');
-  let normalized = cleaned;
-
-  if (lastComma > lastDot && cleaned.length - lastComma === 3) {
-    // European format: "1.299,00"
-    normalized = cleaned.replace(/\./g, '').replace(',', '.');
-  } else {
-    normalized = cleaned.replace(/,/g, '');
-  }
+  // European format ("1.299,00") uses the comma as the decimal separator.
+  const european = lastComma > lastDot && cleaned.length - lastComma === 3;
+  const normalized = european
+    ? cleaned.replace(/\./g, '').replace(',', '.')
+    : cleaned.replace(/,/g, '');
 
   // Duplicate nodes can concatenate values ("499.00499.00"); keep the first.
   const match = normalized.match(/^\d+(\.\d{1,2})?/);

@@ -32,10 +32,16 @@ export function truncate(text: string, length: number) {
  * encode the size in the URL; other hosts are returned unchanged.
  */
 export function sizedImageUrl(url: string, px: number) {
-  if (/media-amazon\.com|ssl-images-amazon\.com/.test(url)) {
+  let host: string;
+  try {
+    host = new URL(url).hostname;
+  } catch {
+    return url;
+  }
+  if (/(^|\.)(media-amazon|ssl-images-amazon)\.com$/.test(host)) {
     return url.replace(/\._[A-Z0-9_,]+_\.(jpg|jpeg|png|webp)$/i, `._AC_SL${px}_.$1`);
   }
-  if (/rukmini\w*\.flixcart\.com\/image\/\d+\/\d+\//.test(url)) {
+  if (/^rukmini\w*\.flixcart\.com$/.test(host) && /\/image\/\d+\/\d+\//.test(url)) {
     return url.replace(/\/image\/\d+\/\d+\//, `/image/${px}/${px}/`);
   }
   return url;

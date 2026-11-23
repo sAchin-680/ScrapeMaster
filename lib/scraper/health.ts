@@ -166,7 +166,8 @@ export function pageKind(url: string) {
   if (
     pathname === '/s' ||
     pathname.startsWith('/s/') ||
-    /^\/search\b|\/search\.json$/.test(pathname)
+    /^\/search\b/.test(pathname) ||
+    pathname.endsWith('/search.json')
   )
     return 'search';
   return 'product';

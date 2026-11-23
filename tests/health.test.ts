@@ -4,6 +4,7 @@ import {
   CircuitOpenError,
   circuitState,
   HealthRegistry,
+  pageKind,
   successRate,
 } from '@/lib/scraper/health';
 
@@ -67,5 +68,19 @@ describe('HealthRegistry circuit breaker', () => {
     expect(successRate(restored.all()[0])).toBe(0.75);
     for (let i = 0; i < CIRCUIT.window + 10; i++) restored.record(ref, true);
     expect(restored.all()[0].recent).toHaveLength(CIRCUIT.window);
+  });
+});
+
+describe('pageKind', () => {
+  it('classifies store pages by path', () => {
+    expect(pageKind('https://www.amazon.in/')).toBe('homepage');
+    expect(pageKind('https://www.amazon.in/gp/bestsellers/electronics')).toBe(
+      'bestsellers',
+    );
+    expect(pageKind('https://www.amazon.in/s?k=phone')).toBe('search');
+    expect(pageKind('https://shop.example/search?q=tv')).toBe('search');
+    expect(pageKind('https://shop.example/api/search.json?q=tv')).toBe('search');
+    expect(pageKind('https://shop.example/products/search-lamp')).toBe('product');
+    expect(pageKind('https://shop.example/searchlight')).toBe('product');
   });
 });

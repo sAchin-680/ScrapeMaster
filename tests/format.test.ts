@@ -43,4 +43,12 @@ describe('sizedImageUrl', () => {
       'https://cdn.shop.example/x.jpg',
     );
   });
+
+  it('matches the image host, not text elsewhere in the URL', () => {
+    const lookalike = 'https://evil.example/media-amazon.com/x._AC_SL1500_.jpg';
+    expect(sizedImageUrl(lookalike, 400)).toBe(lookalike);
+    const query = 'https://evil.example/image/832/832/a.jpg?h=rukminim2.flixcart.com';
+    expect(sizedImageUrl(query, 400)).toBe(query);
+    expect(sizedImageUrl('not a url', 400)).toBe('not a url');
+  });
 });
