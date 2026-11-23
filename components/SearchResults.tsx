@@ -18,7 +18,10 @@ export default async function SearchResults({
   intent: SearchIntent;
   region: Region;
 }) {
-  const response = await searchStores(intent.keywords, region);
+  const response = await searchStores(intent.keywords, region, {
+    min: intent.min,
+    max: intent.max,
+  });
   const { failedStores } = response;
   const { results, hidden } = applyIntent(response.results, intent);
   const showAll = `/search?q=${encodeURIComponent(intent.keywords)}`;

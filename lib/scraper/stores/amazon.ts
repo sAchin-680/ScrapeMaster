@@ -10,7 +10,7 @@ import {
   parsePrice,
 } from '../extract';
 import { ScrapeError } from '../errors';
-import type { Region, StoreAdapter } from './types';
+import type { PriceRange, Region, StoreAdapter } from './types';
 
 const HOST =
   /(^|\.)amazon\.(com|in|co\.uk|de|fr|it|es|ca|com\.au|co\.jp|com\.mx|com\.br|nl|se|pl|sg|ae|sa)$/i;
@@ -167,6 +167,17 @@ export function parseAmazonBestsellers(
     });
 }
 
+/**
+ * Amazon's price refinement (p_36), in the currency's minor unit. A single
+ * price filter is allowed by robots.txt; only stacks of filters are not.
+ */
+export function amazonPriceFilter(price?: PriceRange) {
+  if (!price || (price.min === undefined && price.max === undefined)) return '';
+  const bound = (value?: number) =>
+    value === undefined ? '' : String(Math.round(value * 100));
+  return `&rh=${encodeURIComponent(`p_36:${bound(price.min)}-${bound(price.max)}`)}`;
+}
+
 export const amazon: StoreAdapter = {
   id: 'amazon',
   name: 'Amazon',
@@ -180,7 +191,8 @@ export const amazon: StoreAdapter = {
   parse: parseAmazonProduct,
   search: {
     regions: ['us', 'in', 'uk', 'de'],
-    url: (query, region) => `https://${DOMAINS[region]}/s?k=${encodeURIComponent(query)}`,
+    url: (query, region, price) =>
+      `https://${DOMAINS[region]}/s?k=${encodeURIComponent(query)}${amazonPriceFilter(price)}`,
     parse: parseAmazonSearch,
   },
 };

@@ -2,7 +2,7 @@ import 'server-only';
 import type { Offer } from '@/types';
 import { loadAndParse } from './load';
 import { isAccessory, MATCH_THRESHOLD, titleSimilarity, tokenize } from './match';
-import { searchableStores, type Region } from './stores';
+import { searchableStores, type PriceRange, type Region } from './stores';
 
 export type SearchResult = {
   title: string;
@@ -53,11 +53,15 @@ export function relevance(query: string, title: string) {
   return hits / q.size;
 }
 
-async function run(query: string, region: Region): Promise<SearchResponse> {
+async function run(
+  query: string,
+  region: Region,
+  price?: PriceRange,
+): Promise<SearchResponse> {
   const stores = searchableStores(region);
   const settled = await Promise.allSettled(
     stores.map((adapter) => {
-      const url = adapter.search!.url(query, region);
+      const url = adapter.search!.url(query, region, price);
       return loadAndParse(adapter, url, (html) => adapter.search!.parse(html, url), {
         headers: adapter.search!.headers?.(),
       });
@@ -105,12 +109,12 @@ async function run(query: string, region: Region): Promise<SearchResponse> {
 }
 
 /** Search every store that serves the region; results are cached briefly per query. */
-export function searchStores(query: string, region: Region) {
-  const key = `${region}:${query.trim().toLowerCase()}`;
+export function searchStores(query: string, region: Region, price?: PriceRange) {
+  const key = `${region}:${query.trim().toLowerCase()}:${price?.min ?? ''}-${price?.max ?? ''}`;
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value;
 
-  const value = run(query, region);
+  const value = run(query, region, price);
   cache.set(key, { at: Date.now(), value });
   value.catch(() => cache.delete(key));
   if (cache.size > 200) cache.delete(cache.keys().next().value!);
