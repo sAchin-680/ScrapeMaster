@@ -27,6 +27,10 @@ jobs:
       SMTP_USER: ${{ secrets.SMTP_USER }}
       SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
       EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+      # Web Push price alerts; skipped when the keys are not set.
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_SUBJECT: ${{ secrets.VAPID_SUBJECT }}
       NEXT_PUBLIC_SITE_URL: https://scrape-master-ai.vercel.app
       # Preinstalled on GitHub's Ubuntu runners; renders Flipkart and homepages.
       CHROME_EXECUTABLE_PATH: /usr/bin/google-chrome
