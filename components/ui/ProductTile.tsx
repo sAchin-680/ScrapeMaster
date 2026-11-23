@@ -29,7 +29,7 @@ type Props = {
   /** Rendered below the card link, e.g. action buttons. */
   actions?: ReactNode;
   outOfStock?: boolean;
-  priority?: boolean;
+  preload?: boolean;
 };
 
 /** Shared product card used by tracked products and live store listings. */
@@ -52,7 +52,7 @@ export default function ProductTile(props: Props) {
     aside,
     actions,
     outOfStock,
-    priority,
+    preload,
   } = props;
   const savings = originalPrice > currentPrice ? originalPrice - currentPrice : 0;
   const discount = savings ? Math.round((savings / originalPrice) * 100) : 0;
@@ -73,7 +73,7 @@ export default function ProductTile(props: Props) {
             src={image ?? ''}
             alt={title}
             fill
-            priority={priority}
+            preload={preload}
             sizes="(min-width: 1280px) 290px, (min-width: 768px) 33vw, 50vw"
             className="object-contain p-5 mix-blend-multiply group-hover:scale-[1.04]"
           />

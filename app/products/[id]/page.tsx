@@ -105,7 +105,7 @@ export default async function ProductPage({ params }: Props) {
                 src={product.image}
                 alt={product.title}
                 fill
-                priority
+                preload
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-contain p-10 mix-blend-multiply"
               />

@@ -9,10 +9,10 @@ import { getDealVerdict } from '@/lib/deal';
 
 export default function ProductCard({
   product,
-  priority,
+  preload,
 }: {
   product: Product;
-  priority?: boolean;
+  preload?: boolean;
 }) {
   const history = (product.priceHistory ?? []).map((p) => p.price);
   const verdict = getDealVerdict({
@@ -36,7 +36,7 @@ export default function ProductCard({
       stars={product.stars}
       reviews={product.reviewsCount}
       outOfStock={product.isOutOfStock}
-      priority={priority}
+      preload={preload}
       price={
         <LivePrice
           productId={product._id}

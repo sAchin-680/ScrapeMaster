@@ -54,7 +54,7 @@ async function TrendingContent({ region }: { region: Region }) {
               store={{ name: item.storeName, url: item.url }}
               currency={item.currency}
               currentPrice={item.price}
-              priority={i < 4}
+              preload={i < 4}
               price={
                 <Money amount={item.price} currency={item.currency} className="num" />
               }
