@@ -82,7 +82,7 @@ export async function addUserEmailToProduct(
     const product = await ProductModel.findOneAndUpdate(
       { _id: id, 'users.email': { $ne: address } },
       { $push: { users: { email: address } } },
-      { new: true, projection: 'title url image currency currentPrice' },
+      { returnDocument: 'after', projection: 'title url image currency currentPrice' },
     ).lean();
 
     if (!product) {
