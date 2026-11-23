@@ -1,5 +1,8 @@
 import type { PriceHistoryItem } from '@/types';
 
+/** Bigger "discounts" are almost always an inflated MRP, not a real saving. */
+export const MAX_PLAUSIBLE_DISCOUNT = 0.7;
+
 export type DealVerdict = {
   level: 'great' | 'good' | 'fair' | 'wait' | 'new';
   label: string;

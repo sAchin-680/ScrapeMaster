@@ -8,7 +8,8 @@ import { cn, sizedImageUrl } from '@/lib/utils';
 /**
  * Retailer image served straight from the store's CDN (already optimized and
  * hosted on arbitrary domains). Shimmers until loaded, then fades in; shows a
- * placeholder when it fails.
+ * placeholder when it fails. Preloaded (above-the-fold) images skip the fade:
+ * hiding them until hydration would delay Largest Contentful Paint.
  */
 type Props = ImageProps & {
   /** Request a rendition about this many pixels wide from the store's CDN. */
@@ -17,7 +18,7 @@ type Props = ImageProps & {
 
 export default function ProductImage({ src, alt, className, resize, ...props }: Props) {
   const [state, setState] = useState<'loading' | 'loaded' | 'failed'>(
-    src ? 'loading' : 'failed',
+    src ? (props.preload ? 'loaded' : 'loading') : 'failed',
   );
 
   if (state === 'failed') {

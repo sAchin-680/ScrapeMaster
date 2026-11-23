@@ -22,7 +22,7 @@ export async function trackProduct(input: string) {
   const product = await ProductModel.findOneAndUpdate(
     { url },
     { ...scraped, priceHistory, ...getPriceStats(priceHistory) },
-    { upsert: true, new: true, setDefaultsOnInsert: true },
+    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true },
   )
     .select('_id')
     .lean();

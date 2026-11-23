@@ -1,7 +1,8 @@
 import 'server-only';
 import { connectDB } from '@/lib/db';
 import ProductModel from '@/lib/models/product.model';
-import { getEmailNotifType } from '@/lib/notifications';
+import { getEmailNotifType, pushMessage } from '@/lib/notifications';
+import { sendProductPush } from '@/lib/push/send';
 import { generateEmailBody, sendEmail } from '@/lib/nodemailer';
 import { scrapeProduct } from '@/lib/scraper';
 import { appendPrice, getPriceStats } from '@/lib/utils';
@@ -51,6 +52,19 @@ export async function refreshProduct(id: string) {
       product.users.map((user) => user.email),
       id,
     );
+  }
+
+  if (notification) {
+    await sendProductPush(
+      id,
+      pushMessage(notification, {
+        _id: id,
+        title: product.title,
+        currentPrice: product.currentPrice,
+        currency: product.currency,
+        image: product.image ?? undefined,
+      }),
+    ).catch((error) => console.error('[refresh] push failed', id, error));
   }
 
   if (offersAreStale(product.offersCheckedAt)) {

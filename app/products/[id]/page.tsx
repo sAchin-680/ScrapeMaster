@@ -26,7 +26,10 @@ import RelativeTime from '@/components/live/RelativeTime';
 import Money from '@/components/ui/Money';
 import ProductImage from '@/components/ui/ProductImage';
 import StatTile from '@/components/ui/StatTile';
+import SaveButton from '@/components/watchlist/SaveButton';
+import PushButton from '@/components/push/PushButton';
 import { getProductById, getSimilarProducts } from '@/lib/data/products';
+import { getSaleEvents, outlookFor } from '@/lib/data/outlook';
 import { getDealVerdict } from '@/lib/deal';
 import { refreshIfStale } from '@/lib/services/refresh';
 import { formatNumber, formatPrice, truncate } from '@/lib/utils';
@@ -70,9 +73,13 @@ export default async function ProductPage({ params }: Props) {
   // Re-check stale prices after responding; the live stream pushes any change.
   after(() => refreshIfStale(id));
 
-  const similar = await getSimilarProducts(id);
+  const [similar, sales] = await Promise.all([
+    getSimilarProducts(id),
+    getSaleEvents(product.currency),
+  ]);
   const history = product.priceHistory ?? [];
   const verdict = getDealVerdict({ ...product, priceHistory: history });
+  const forecast = outlookFor(product, sales);
   // Send buyers to the cheapest matching listing, falling back to this one.
   const buyOffer = [...(product.offers ?? [])].sort((a, b) => a.price - b.price)[0] ?? {
     url: product.url,
@@ -94,14 +101,18 @@ export default async function ProductPage({ params }: Props) {
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <div className="card relative aspect-square overflow-hidden bg-white p-4">
+          <div className="relative lg:sticky lg:top-24 lg:self-start">
+            <div
+              className="absolute -inset-3 -z-10 rounded-[2.5rem] md:-inset-6 bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
+              aria-hidden
+            />
+            <div className="card relative aspect-square overflow-hidden rounded-3xl bg-white p-4">
               <ProductImage
                 resize={800}
                 src={product.image}
                 alt={product.title}
                 fill
-                priority
+                preload
                 sizes="(min-width: 1024px) 45vw, 100vw"
                 className="object-contain p-10 mix-blend-multiply"
               />
@@ -144,7 +155,10 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </header>
 
-            <section className="card p-5 sm:p-6" aria-labelledby="price-heading">
+            <section
+              className="glass glow-border rounded-3xl p-5 sm:p-6"
+              aria-labelledby="price-heading"
+            >
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p id="price-heading" className="eyebrow">
@@ -155,13 +169,18 @@ export default async function ProductPage({ params }: Props) {
                       productId={product._id}
                       price={product.currentPrice}
                       currency={product.currency}
-                      className="text-4xl font-semibold sm:text-5xl"
+                      className="glow text-4xl font-semibold tracking-tight sm:text-5xl"
                     />
                     {savings > 0 && (
-                      <span className="num text-lg text-muted line-through">
+                      // Name the reference price so the discount is unambiguous.
+                      <span className="num text-lg text-muted">
+                        <span className="mr-1 text-xs">
+                          {product.currency.trim() === '₹' ? 'M.R.P.' : 'List price'}
+                        </span>
                         <Money
                           amount={product.originalPrice}
                           currency={product.currency}
+                          className="line-through"
                         />
                       </span>
                     )}
@@ -185,7 +204,11 @@ export default async function ProductPage({ params }: Props) {
                     )}
                   </p>
                 </div>
-                <RefreshButton productId={product._id} />
+                <div className="flex items-center gap-2">
+                  <PushButton productId={product._id} />
+                  <SaveButton productId={product._id} variant="full" />
+                  <RefreshButton productId={product._id} />
+                </div>
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -203,13 +226,13 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </section>
 
-            <BuyMeter verdict={verdict} />
+            <BuyMeter verdict={verdict} forecast={forecast} />
 
             <OfferComparison product={product} />
 
             <section
               aria-label="Price statistics"
-              className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line"
+              className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line"
             >
               <StatTile
                 label="Current"
@@ -242,7 +265,10 @@ export default async function ProductPage({ params }: Props) {
               />
             </section>
 
-            <section className="card p-5 sm:p-6" aria-labelledby="history-heading">
+            <section
+              className="glass rounded-3xl p-5 sm:p-6"
+              aria-labelledby="history-heading"
+            >
               <div className="mb-4 flex items-center justify-between">
                 <h2 id="history-heading" className="eyebrow">
                   Price history
@@ -261,7 +287,7 @@ export default async function ProductPage({ params }: Props) {
                   {bullets.map((line, i) => (
                     <li key={i} className="flex gap-3">
                       <span
-                        className="mt-2.5 size-1.5 shrink-0 rounded-full bg-ink/40"
+                        className="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_8px] shadow-accent/60"
                         aria-hidden
                       />
                       {line}

@@ -2,7 +2,7 @@ import 'server-only';
 import type { Offer } from '@/types';
 import { loadAndParse } from './load';
 import { isAccessory, MATCH_THRESHOLD, titleSimilarity, tokenize } from './match';
-import { searchableStores, type Region } from './stores';
+import { searchableStores, type PriceRange, type Region } from './stores';
 
 export type SearchResult = {
   title: string;
@@ -17,21 +17,51 @@ const cache = new Map<string, { at: number; value: Promise<SearchResponse> }>();
 
 export type SearchResponse = { results: SearchResult[]; failedStores: string[] };
 
-/** Share of the query's words that appear in a title. */
-function relevance(query: string, title: string) {
+// Words stores use in titles for common category searches. Listed explicitly:
+// substring matching would let "phone" match headphones and microphones.
+// ("phone", "smartphone" and "mobile" are left out: tokenize drops them.)
+const SYNONYM_WORDS: Record<string, string[]> = {
+  tv: ['television', 'smarttv'],
+  television: ['tv'],
+  laptop: ['notebook', 'macbook', 'chromebook'],
+  earbuds: ['earphones', 'tws', 'airpods', 'airdopes'],
+  earphones: ['earbuds', 'tws', 'airdopes'],
+  headphones: ['headset'],
+  watch: ['smartwatch'],
+  smartwatch: ['watch'],
+  fridge: ['refrigerator'],
+  refrigerator: ['fridge'],
+};
+
+// Keyed and valued by the stemmed tokens tokenize produces ("televis", "earbud").
+const stemOf = (word: string) => [...tokenize(word)][0] ?? word;
+const SYNONYMS = new Map(
+  Object.entries(SYNONYM_WORDS).map(([word, alts]) => [stemOf(word), alts.map(stemOf)]),
+);
+
+/** Share of the query's words that appear in a title, counting synonyms. */
+export function relevance(query: string, title: string) {
   const q = tokenize(query);
-  if (!q.size) return 0;
+  // Only generic words ("phone", "bluetooth"): nothing specific to check, so
+  // trust the store's own ranking instead of discarding every result.
+  if (!q.size) return 1;
   const t = tokenize(title);
   let hits = 0;
-  for (const token of q) if (t.has(token)) hits++;
+  for (const token of q) {
+    if (t.has(token) || SYNONYMS.get(token)?.some((alt) => t.has(alt))) hits++;
+  }
   return hits / q.size;
 }
 
-async function run(query: string, region: Region): Promise<SearchResponse> {
+async function run(
+  query: string,
+  region: Region,
+  price?: PriceRange,
+): Promise<SearchResponse> {
   const stores = searchableStores(region);
   const settled = await Promise.allSettled(
     stores.map((adapter) => {
-      const url = adapter.search!.url(query, region);
+      const url = adapter.search!.url(query, region, price);
       return loadAndParse(adapter, url, (html) => adapter.search!.parse(html, url), {
         headers: adapter.search!.headers?.(),
       });
@@ -79,12 +109,12 @@ async function run(query: string, region: Region): Promise<SearchResponse> {
 }
 
 /** Search every store that serves the region; results are cached briefly per query. */
-export function searchStores(query: string, region: Region) {
-  const key = `${region}:${query.trim().toLowerCase()}`;
+export function searchStores(query: string, region: Region, price?: PriceRange) {
+  const key = `${region}:${query.trim().toLowerCase()}:${price?.min ?? ''}-${price?.max ?? ''}`;
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value;
 
-  const value = run(query, region);
+  const value = run(query, region, price);
   cache.set(key, { at: Date.now(), value });
   value.catch(() => cache.delete(key));
   if (cache.size > 200) cache.delete(cache.keys().next().value!);

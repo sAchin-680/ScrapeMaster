@@ -4,9 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from 'react';
 import {
@@ -30,10 +30,16 @@ const PreferencesContext = createContext<Value>({
   setPreferences: () => {},
 });
 
-function readCookie(name: string) {
-  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : undefined;
+function readSavedPreferences() {
+  const match = document.cookie.match(
+    new RegExp(`(?:^|; )${PREFERENCES_COOKIE}=([^;]*)`),
+  );
+  return match ? decodeURIComponent(match[1]) : null;
 }
+
+// The cookie only changes through setPreferences in this tab, which is
+// tracked in state, so there is nothing to subscribe to.
+const subscribeToCookie = () => () => {};
 
 /**
  * Preferences are read from the cookie in the browser rather than on the
@@ -47,12 +53,12 @@ export function PreferencesProvider({
   children: ReactNode;
   rates: RateTable;
 }) {
-  const [preferences, setPreferences] = useState<Preferences>(DEFAULT_PREFERENCES);
-
-  useEffect(() => {
-    const saved = readCookie(PREFERENCES_COOKIE);
-    if (saved) setPreferences(parsePreferences(saved));
-  }, []);
+  const saved = useSyncExternalStore(subscribeToCookie, readSavedPreferences, () => null);
+  const [chosen, setPreferences] = useState<Preferences | null>(null);
+  const preferences = useMemo(
+    () => chosen ?? (saved ? parsePreferences(saved) : DEFAULT_PREFERENCES),
+    [chosen, saved],
+  );
 
   const value = useMemo(
     () => ({ preferences, rates, setPreferences }),

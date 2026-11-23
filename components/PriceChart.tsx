@@ -124,7 +124,7 @@ export default function PriceChart({
 
         {/* Markers live in HTML so they stay round under the stretched viewBox. */}
         <span
-          className="pointer-events-none absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-down shadow"
+          className="pointer-events-none absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-down shadow-sm"
           style={{
             left: `${(points[lowIndex].x / W) * 100}%`,
             top: `${(points[lowIndex].y / H) * 100}%`,
@@ -132,7 +132,7 @@ export default function PriceChart({
           title="Lowest price"
         />
         <span
-          className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-accent shadow transition-[left,top] duration-75"
+          className="pointer-events-none absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-surface bg-accent shadow-sm transition-[left,top] duration-75"
           style={{ left: `${(point.x / W) * 100}%`, top: `${(point.y / H) * 100}%` }}
         />
       </div>

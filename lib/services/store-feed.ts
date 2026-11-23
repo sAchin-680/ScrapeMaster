@@ -1,6 +1,7 @@
 import 'server-only';
 import type { Offer } from '@/types';
 import { swrMap } from '@/lib/cache';
+import { MAX_PLAUSIBLE_DISCOUNT } from '@/lib/deal';
 import { loadSnapshot, type FeedResult } from '@/lib/services/snapshots';
 import { loadAndParse } from '@/lib/scraper/load';
 import { parseSaleSignals, type SaleSignal } from '@/lib/scraper/sale-signals';
@@ -152,8 +153,6 @@ const DEAL_CATEGORIES: Record<Region, string[]> = {
   de: ['kopfhörer', 'smartwatch', 'laptop', 'küchengeräte'],
 };
 const MIN_DISCOUNT = 0.2;
-// Bigger "discounts" are almost always an inflated MRP, not a real saving.
-const MAX_PLAUSIBLE_DISCOUNT = 0.7;
 
 export type DealItem = Offer & { discount: number };
 

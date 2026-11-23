@@ -32,7 +32,7 @@ const steps = [
     icon: LineChart,
     text: 'Check the history chart: many prices rise just before a sale.',
   },
-  { icon: BellRing, text: 'Get an email the moment it truly drops.' },
+  { icon: BellRing, text: 'Get an alert the moment it truly drops.' },
 ];
 
 function StatusPill({ live }: { live: boolean }) {
@@ -172,7 +172,7 @@ export default function SalesSection({ country, sales, signals, checked }: Props
     <section className="container py-16" aria-labelledby="sales-heading">
       <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-10">
         <div
-          className="absolute -right-24 -top-24 size-72 rounded-full bg-gradient-to-br from-indigo-500/20 to-violet-500/10 blur-3xl"
+          className="absolute -right-24 -top-24 size-72 rounded-full bg-linear-to-br from-indigo-500/20 to-violet-500/10 blur-3xl"
           aria-hidden
         />
         <div className="relative grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -180,7 +180,10 @@ export default function SalesSection({ country, sales, signals, checked }: Props
             <p className="inline-flex items-center gap-1.5 text-sm font-medium text-accent">
               <Radar className="size-4" aria-hidden /> {country.flag} Sale radar
             </p>
-            <h2 id="sales-heading" className="mt-2 text-3xl font-semibold tracking-tight">
+            <h2
+              id="sales-heading"
+              className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
+            >
               Big sales, live & upcoming
             </h2>
             <p className="mt-3 text-muted">

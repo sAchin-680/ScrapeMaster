@@ -25,7 +25,7 @@ async function TrendingContent({ region }: { region: Region }) {
           </p>
           <h2
             id="trending-heading"
-            className="mt-2 text-3xl font-semibold tracking-tight"
+            className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
           >
             Bestsellers on {SEARCHABLE_STORES[region].join(' & ')}
           </h2>
@@ -54,13 +54,13 @@ async function TrendingContent({ region }: { region: Region }) {
               store={{ name: item.storeName, url: item.url }}
               currency={item.currency}
               currentPrice={item.price}
-              priority={i < 4}
+              preload={i < 4}
               price={
                 <Money amount={item.price} currency={item.currency} className="num" />
               }
               badge={
                 item.rank && item.rank <= 10 ? (
-                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-semibold text-neutral-900 shadow-sm">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-amber-400 px-2 py-0.5 text-[11px] font-semibold text-neutral-900 shadow-xs">
                     <Crown className="size-3" aria-hidden />#{item.rank} Bestseller
                   </span>
                 ) : undefined

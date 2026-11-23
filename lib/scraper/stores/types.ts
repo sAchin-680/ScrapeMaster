@@ -16,12 +16,15 @@ export interface StoreAdapter {
     regions: Region[];
     /** False when search needs credentials that aren't configured. */
     enabled?: () => boolean;
-    url(query: string, region: Region): string;
+    /** Price bounds, when given, let the store return listings in range. */
+    url(query: string, region: Region, price?: PriceRange): string;
     parse(body: string, pageUrl: string): Offer[];
     /** Set for an official API: fetched over plain HTTP with these headers. */
     headers?: () => Record<string, string>;
   };
 }
+
+export type PriceRange = { min?: number; max?: number };
 
 export function regionFromCurrency(currency: string): Region {
   if (currency.includes('₹')) return 'in';

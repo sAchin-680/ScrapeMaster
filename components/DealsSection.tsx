@@ -54,7 +54,10 @@ async function DealsContent({ tracked, region }: Props) {
           <p className="inline-flex items-center gap-1.5 text-sm font-medium text-up">
             <Flame className="size-4" aria-hidden /> Deals right now
           </p>
-          <h2 id="deals-heading" className="mt-2 text-3xl font-semibold tracking-tight">
+          <h2
+            id="deals-heading"
+            className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
+          >
             Smart buys today
           </h2>
         </div>

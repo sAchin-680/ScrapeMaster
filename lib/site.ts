@@ -10,6 +10,6 @@ export const siteConfig = {
   name: 'ScrapeMaster',
   tagline: 'Real-time price tracker for any online store',
   description:
-    'Track prices on Amazon, Flipkart, Walmart and any online store. See full price history, compare stores and get an email the moment it drops.',
+    'Track prices on Amazon, Flipkart, Walmart and any online store. See full price history, compare stores and get an alert the moment it drops.',
   url: siteUrl(),
 };

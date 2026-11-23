@@ -139,8 +139,8 @@ export default function Searchbar({ defaultValue = '' }: { defaultValue?: string
     <form onSubmit={submit} className="w-full" noValidate>
       <div
         className={cn(
-          'group relative flex items-center gap-2 rounded-xl border bg-surface p-1.5 shadow-sm transition focus-within:ring-4 focus-within:ring-accent/10',
-          error ? 'border-up/60' : 'border-line focus-within:border-accent/60',
+          'glass glow-border group relative flex items-center gap-2 rounded-2xl p-1.5 transition focus-within:ring-4 focus-within:ring-accent/10',
+          error ? 'border-up/60' : 'focus-within:border-accent/40',
         )}
       >
         <Search className="ml-2 size-5 shrink-0 text-muted" aria-hidden />
@@ -177,7 +177,7 @@ export default function Searchbar({ defaultValue = '' }: { defaultValue?: string
           aria-invalid={Boolean(error)}
           aria-describedby="product-url-status"
           disabled={isPending}
-          className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] outline-none placeholder:text-muted/80 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:hidden"
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-[15px] outline-hidden placeholder:text-muted/80 focus-visible:ring-0 focus-visible:ring-offset-0 [&::-webkit-search-cancel-button]:hidden"
         />
         {!url && !isPending && (
           <button

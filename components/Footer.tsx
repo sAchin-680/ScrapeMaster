@@ -3,7 +3,11 @@ import Logo from '@/components/ui/Logo';
 
 export default function Footer() {
   return (
-    <footer className="mt-24 border-t border-line">
+    <footer className="relative mt-24">
+      <div
+        className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-accent/40 to-transparent"
+        aria-hidden
+      />
       <div className="container flex flex-col gap-6 py-10 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-2">
           <Logo />

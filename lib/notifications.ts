@@ -1,4 +1,5 @@
 import type { NotificationType, PriceHistoryItem } from '@/types';
+import { formatPrice, truncate } from '@/lib/utils/format';
 import { getLowestPrice } from '@/lib/utils/price';
 
 export const Notification = {
@@ -40,4 +41,34 @@ export function getEmailNotifType(
     return Notification.THRESHOLD_MET;
   }
   return null;
+}
+
+/** Short text for a device notification about a price event. */
+export function pushMessage(
+  type: NotificationType,
+  product: {
+    _id: string;
+    title: string;
+    currentPrice: number;
+    currency: string;
+    image?: string;
+  },
+) {
+  const name = truncate(product.title, 60);
+  const price = formatPrice(product.currentPrice, product.currency);
+  const title =
+    type === Notification.LOWEST_PRICE
+      ? `Lowest price yet: ${price}`
+      : type === Notification.CHANGE_OF_STOCK
+        ? `Back in stock at ${price}`
+        : type === Notification.THRESHOLD_MET
+          ? `${THRESHOLD_PERCENTAGE}%+ off now: ${price}`
+          : `Price update: ${price}`;
+  return {
+    title,
+    body: name,
+    url: `/products/${product._id}`,
+    image: product.image,
+    tag: product._id,
+  };
 }

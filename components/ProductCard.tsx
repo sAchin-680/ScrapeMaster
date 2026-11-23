@@ -3,16 +3,17 @@ import DealBadge from '@/components/DealBadge';
 import LivePrice from '@/components/live/LivePrice';
 import Money from '@/components/ui/Money';
 import ProductTile from '@/components/ui/ProductTile';
+import SaveButton from '@/components/watchlist/SaveButton';
 import Sparkline from '@/components/ui/Sparkline';
 import type { Product } from '@/types';
 import { getDealVerdict } from '@/lib/deal';
 
 export default function ProductCard({
   product,
-  priority,
+  preload,
 }: {
   product: Product;
-  priority?: boolean;
+  preload?: boolean;
 }) {
   const history = (product.priceHistory ?? []).map((p) => p.price);
   const verdict = getDealVerdict({
@@ -36,7 +37,8 @@ export default function ProductCard({
       stars={product.stars}
       reviews={product.reviewsCount}
       outOfStock={product.isOutOfStock}
-      priority={priority}
+      preload={preload}
+      corner={<SaveButton productId={product._id} />}
       price={
         <LivePrice
           productId={product._id}
@@ -46,7 +48,7 @@ export default function ProductCard({
       }
       badge={
         verdict.level === 'great' || verdict.level === 'good' ? (
-          <DealBadge verdict={verdict} className="shadow-sm" />
+          <DealBadge verdict={verdict} className="shadow-xs" />
         ) : undefined
       }
       aside={

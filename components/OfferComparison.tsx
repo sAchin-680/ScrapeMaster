@@ -60,7 +60,7 @@ export default function OfferComparison({ product }: { product: Product }) {
                   <span className="flex items-center gap-2 text-sm font-medium">
                     {offer.storeName}
                     {offer.price === lowest && offers.length > 1 && (
-                      <span className="inline-flex items-center gap-1 rounded bg-down px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
+                      <span className="inline-flex items-center gap-1 rounded-sm bg-down px-1.5 py-0.5 text-[10px] font-semibold uppercase text-white">
                         <Trophy className="size-3" aria-hidden /> Lowest
                       </span>
                     )}

@@ -31,7 +31,7 @@ export default function Ticker({ products }: { products: Product[] }) {
 
   return (
     <div
-      className="mask-fade-x group hidden overflow-hidden border-b border-line bg-paper [@media(hover:hover)]:block"
+      className="mask-fade-x group hidden overflow-hidden [@media(hover:hover)]:block"
       aria-label="Recently tracked prices"
     >
       <ul className="flex w-max animate-ticker gap-10 py-2 group-hover:[animation-play-state:paused] group-focus-within:[animation-play-state:paused] group-active:[animation-play-state:paused] motion-reduce:animate-none">

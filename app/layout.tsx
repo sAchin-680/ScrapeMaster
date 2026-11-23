@@ -1,14 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
+import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import Footer from '@/components/Footer';
+import ServiceWorker from '@/components/push/ServiceWorker';
 import { PreferencesProvider } from '@/components/PreferencesProvider';
 import { getRates } from '@/lib/fx';
 import { buildAnnouncements } from '@/lib/announcements';
 import { getActiveSales } from '@/lib/data/sales';
 import { getPriceSignals } from '@/lib/data/signals';
 import {
+  type CountryCode,
   CURRENCIES,
   DEFAULT_PREFERENCES,
   getCountry,
@@ -20,18 +22,19 @@ import { withTimeout } from '@/lib/utils/timeout';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
 
-const sans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-sans',
-  weight: '100 900',
+// Self-hosted at build time as Latin-subset woff2.
+const sans = Geist({
+  subsets: ['latin'],
+  variable: '--font-geist-sans',
   display: 'swap',
 });
 
-const mono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-mono',
-  weight: '100 900',
+// Used for a few small labels below the fold, so it is not preloaded.
+const mono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -58,10 +61,23 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#fafafa' },
-    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
+    { media: '(prefers-color-scheme: light)', color: '#f7f8fc' },
+    { media: '(prefers-color-scheme: dark)', color: '#06070e' },
   ],
 };
+
+type ActiveSales = Awaited<ReturnType<typeof getActiveSales>>;
+type PriceSignals = Awaited<ReturnType<typeof getPriceSignals>>;
+
+/** Banners for the announcement bar, read at request time rather than during render. */
+function siteAnnouncements(sales: ActiveSales, signals: PriceSignals, code: CountryCode) {
+  return buildAnnouncements(
+    filterSalesFor(sales, code, Date.now(), 21),
+    signals,
+    // peek() never blocks rendering; banners appear once the feed has loaded.
+    saleSignalFeed(regionForCountry(code)).peek()?.data.signals ?? [],
+  );
+}
 
 export default async function RootLayout({
   children,
@@ -78,12 +94,7 @@ export default async function RootLayout({
       waves: [],
     }),
   ]);
-  // peek() never blocks rendering; banners appear once the feed has loaded.
-  const announcements = buildAnnouncements(
-    filterSalesFor(sales, country.code, Date.now(), 21),
-    signals,
-    saleSignalFeed(regionForCountry(country.code)).peek()?.data.signals ?? [],
-  );
+  const announcements = siteAnnouncements(sales, signals, country.code);
 
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
@@ -101,6 +112,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <ServiceWorker />
         </PreferencesProvider>
       </body>
     </html>

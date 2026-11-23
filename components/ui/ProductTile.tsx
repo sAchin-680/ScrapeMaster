@@ -28,8 +28,10 @@ type Props = {
   aside?: ReactNode;
   /** Rendered below the card link, e.g. action buttons. */
   actions?: ReactNode;
+  /** Control pinned to the top-right corner, outside the card's link. */
+  corner?: ReactNode;
   outOfStock?: boolean;
-  priority?: boolean;
+  preload?: boolean;
 };
 
 /** Shared product card used by tracked products and live store listings. */
@@ -51,8 +53,9 @@ export default function ProductTile(props: Props) {
     note,
     aside,
     actions,
+    corner,
     outOfStock,
-    priority,
+    preload,
   } = props;
   const savings = originalPrice > currentPrice ? originalPrice - currentPrice : 0;
   const discount = savings ? Math.round((savings / originalPrice) * 100) : 0;
@@ -73,22 +76,22 @@ export default function ProductTile(props: Props) {
             src={image ?? ''}
             alt={title}
             fill
-            priority={priority}
+            preload={preload}
             sizes="(min-width: 1280px) 290px, (min-width: 768px) 33vw, 50vw"
             className="object-contain p-5 mix-blend-multiply group-hover:scale-[1.04]"
           />
           <StoreLogo
             url={store.url}
             name={store.name}
-            className="absolute left-2 top-2 size-7 shadow-sm ring-black/5"
+            className="absolute left-2 top-2 size-7 shadow-xs ring-black/5"
           />
-          {discount > 0 && (
-            <span className="num absolute right-2 top-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+          {discount > 0 && !outOfStock && (
+            <span className="num absolute bottom-2 right-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-xs">
               −{discount}%
             </span>
           )}
           {outOfStock && (
-            <span className="absolute inset-x-2 bottom-2 rounded-md bg-neutral-900/80 py-1 text-center text-xs font-medium text-white backdrop-blur">
+            <span className="absolute inset-x-2 bottom-2 rounded-md bg-neutral-900/80 py-1 text-center text-xs font-medium text-white backdrop-blur-sm">
               Out of stock
             </span>
           )}
@@ -107,7 +110,7 @@ export default function ProductTile(props: Props) {
               </span>
             )}
           </p>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-medium leading-snug transition-colors group-hover:text-accent">
+          <h3 className="line-clamp-2 min-h-10 text-sm font-medium leading-snug transition-colors group-hover:text-accent">
             {title}
           </h3>
           {stars > 0 && (
@@ -140,6 +143,7 @@ export default function ProductTile(props: Props) {
         </div>
       </Link>
       {actions && <div className="px-1.5 pb-1.5 pt-1">{actions}</div>}
+      {corner && <div className="absolute right-4 top-4">{corner}</div>}
     </article>
   );
 }

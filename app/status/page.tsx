@@ -34,7 +34,9 @@ export default async function StatusPage() {
   return (
     <div className="container max-w-4xl py-16">
       <p className="text-sm font-medium text-accent">Status</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">Store reliability</h1>
+      <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
+        Store reliability
+      </h1>
       <p className="mt-3 max-w-2xl text-muted">
         Prices are refreshed every 30 minutes. Each row shows how often requests to a
         store succeeded over the last {RELIABILITY_WINDOW} attempts per page type, and

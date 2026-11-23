@@ -19,4 +19,4 @@ export function searchableStores(region: Region) {
 
 export { amazon, flipkart, generic };
 export { regionFromCurrency } from './types';
-export type { Region, StoreAdapter } from './types';
+export type { PriceRange, Region, StoreAdapter } from './types';

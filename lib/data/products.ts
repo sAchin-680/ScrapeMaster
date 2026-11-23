@@ -43,6 +43,23 @@ export const getProductById = cache(async (id: string): Promise<Product | null> 
   }
 });
 
+/** Products for the given ids, in the same order; missing ones are skipped. */
+export async function getProductsByIds(ids: string[]): Promise<Product[]> {
+  const valid = ids.filter((id) => isValidObjectId(id));
+  if (!valid.length) return [];
+  try {
+    await connectDB();
+    const products = await ProductModel.find({ _id: { $in: valid } })
+      .select(PUBLIC_FIELDS)
+      .lean();
+    const byId = new Map(products.map((p) => [String(p._id), p]));
+    return serialize(valid.flatMap((id) => byId.get(id) ?? [])) as unknown as Product[];
+  } catch (error) {
+    logDataError('getProductsByIds', error);
+    return [];
+  }
+}
+
 export async function getSimilarProducts(id: string, limit = 4): Promise<Product[]> {
   const current = await getProductById(id);
   if (!current) return [];
