@@ -14,7 +14,7 @@ const steps = [
   {
     icon: BellRing,
     title: 'Get the alert',
-    body: 'New all-time low, 40%+ discount or back in stock — you get one clean email, the moment it happens.',
+    body: 'New all-time low, 40%+ discount or back in stock — you get one clean alert by email or on your phone, the moment it happens.',
   },
 ];
 

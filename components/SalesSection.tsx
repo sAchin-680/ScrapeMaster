@@ -32,7 +32,7 @@ const steps = [
     icon: LineChart,
     text: 'Check the history chart: many prices rise just before a sale.',
   },
-  { icon: BellRing, text: 'Get an email the moment it truly drops.' },
+  { icon: BellRing, text: 'Get an alert the moment it truly drops.' },
 ];
 
 function StatusPill({ live }: { live: boolean }) {

@@ -130,7 +130,7 @@ export default async function Home() {
             </h1>
             <p className="mt-5 max-w-lg text-lg leading-relaxed text-muted">
               Search a product to compare live prices on Amazon, Flipkart and more, or
-              paste a link from any shop. Get the full price history and an email the
+              paste a link from any shop. Get the full price history and an alert the
               moment it drops.
             </p>
 
