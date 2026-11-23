@@ -6,17 +6,22 @@ import ProductImage from '@/components/ui/ProductImage';
 import StoreLogo from '@/components/ui/StoreLogo';
 import type { Region } from '@/lib/scraper/stores';
 import { searchStores } from '@/lib/scraper/search';
+import { applyIntent } from '@/lib/search/apply';
+import type { SearchIntent } from '@/lib/search/intent';
 import { cn } from '@/lib/utils';
 import { openListingHref } from '@/lib/utils/url';
 
 export default async function SearchResults({
-  query,
+  intent,
   region,
 }: {
-  query: string;
+  intent: SearchIntent;
   region: Region;
 }) {
-  const { results, failedStores } = await searchStores(query, region);
+  const response = await searchStores(intent.keywords, region);
+  const { failedStores } = response;
+  const { results, hidden } = applyIntent(response.results, intent);
+  const showAll = `/search?q=${encodeURIComponent(intent.keywords)}`;
 
   return (
     <>
@@ -27,7 +32,18 @@ export default async function SearchResults({
         </p>
       )}
 
-      {results.length === 0 ? (
+      {results.length === 0 && hidden > 0 ? (
+        <div className="card px-6 py-16 text-center">
+          <h2 className="text-lg font-semibold">Nothing in your price range yet</h2>
+          <p className="mt-2 text-sm text-muted">
+            Found {hidden} {hidden === 1 ? 'listing' : 'listings'} for “{intent.keywords}
+            ”, all outside the range you asked for.
+          </p>
+          <Link href={showAll} className="btn-ghost mt-6">
+            Show all results
+          </Link>
+        </div>
+      ) : results.length === 0 ? (
         <div className="card px-6 py-16 text-center">
           <h2 className="text-lg font-semibold">No matching products found</h2>
           <p className="mt-2 text-sm text-muted">
@@ -35,86 +51,100 @@ export default async function SearchResults({
           </p>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {results.map((result) => (
-            <li
-              key={result.best.url}
-              className="reveal card flex flex-col gap-4 p-4 transition-colors duration-300 hover:border-accent/30"
-            >
-              {/* Image and title open the product inside the app. */}
-              <Link
-                href={openListingHref(result.best.url)}
-                className="group flex gap-4 rounded-lg"
-              >
-                <div className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-white">
-                  <ProductImage
-                    resize={240}
-                    src={result.image ?? ''}
-                    alt={result.title}
-                    fill
-                    sizes="96px"
-                    className="object-contain p-2"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h3 className="line-clamp-3 text-sm font-medium leading-snug transition-colors group-hover:text-accent">
-                    {result.title}
-                  </h3>
-                  <p className="mt-2 text-xs text-muted">
-                    Best price on{' '}
-                    <span className="font-medium text-ink">{result.best.storeName}</span>
-                  </p>
-                  <Money
-                    amount={result.best.price}
-                    currency={result.best.currency}
-                    className="num text-xl font-semibold"
-                  />
-                </div>
+        <>
+          {hidden > 0 && (
+            <p className="mb-4 text-sm text-muted">
+              {hidden} more {hidden === 1 ? 'listing is' : 'listings are'} outside your
+              price range.{' '}
+              <Link href={showAll} className="font-medium text-accent hover:underline">
+                Show all
               </Link>
+            </p>
+          )}
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {results.map((result) => (
+              <li
+                key={result.best.url}
+                className="reveal card flex flex-col gap-4 p-4 transition-colors duration-300 hover:border-accent/30"
+              >
+                {/* Image and title open the product inside the app. */}
+                <Link
+                  href={openListingHref(result.best.url)}
+                  className="group flex gap-4 rounded-lg"
+                >
+                  <div className="relative size-24 shrink-0 overflow-hidden rounded-xl bg-white">
+                    <ProductImage
+                      resize={240}
+                      src={result.image ?? ''}
+                      alt={result.title}
+                      fill
+                      sizes="96px"
+                      className="object-contain p-2"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="line-clamp-3 text-sm font-medium leading-snug transition-colors group-hover:text-accent">
+                      {result.title}
+                    </h3>
+                    <p className="mt-2 text-xs text-muted">
+                      Best price on{' '}
+                      <span className="font-medium text-ink">
+                        {result.best.storeName}
+                      </span>
+                    </p>
+                    <Money
+                      amount={result.best.price}
+                      currency={result.best.currency}
+                      className="num text-xl font-semibold"
+                    />
+                  </div>
+                </Link>
 
-              <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line text-sm">
-                {result.offers.map((offer) => (
-                  <li key={offer.store}>
-                    <a
-                      href={offer.url}
-                      target="_blank"
-                      rel="noopener noreferrer nofollow"
-                      className={cn(
-                        'flex items-center gap-2 px-3 py-2 transition hover:bg-paper',
-                        offer.price === result.best.price &&
-                          result.offers.length > 1 &&
-                          'bg-accent-soft/40',
-                      )}
-                    >
-                      <StoreLogo
-                        url={offer.url}
-                        name={offer.storeName}
-                        className="size-7"
-                      />
-                      <span className="flex-1 font-medium">{offer.storeName}</span>
-                      {offer.price === result.best.price && result.offers.length > 1 && (
-                        <Trophy
-                          className="size-3.5 text-down"
-                          aria-label="Lowest price"
+                <ul className="divide-y divide-line overflow-hidden rounded-lg border border-line text-sm">
+                  {result.offers.map((offer) => (
+                    <li key={offer.store}>
+                      <a
+                        href={offer.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className={cn(
+                          'flex items-center gap-2 px-3 py-2 transition hover:bg-paper',
+                          offer.price === result.best.price &&
+                            result.offers.length > 1 &&
+                            'bg-accent-soft/40',
+                        )}
+                      >
+                        <StoreLogo
+                          url={offer.url}
+                          name={offer.storeName}
+                          className="size-7"
                         />
-                      )}
-                      <Money
-                        amount={offer.price}
-                        currency={offer.currency}
-                        className="num font-semibold"
-                      />
-                      <ExternalLink className="size-3.5 text-muted" aria-hidden />
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                        <span className="flex-1 font-medium">{offer.storeName}</span>
+                        {offer.price === result.best.price &&
+                          result.offers.length > 1 && (
+                            <Trophy
+                              className="size-3.5 text-down"
+                              aria-label="Lowest price"
+                            />
+                          )}
+                        <Money
+                          amount={offer.price}
+                          currency={offer.currency}
+                          className="num font-semibold"
+                        />
+                        <ExternalLink className="size-3.5 text-muted" aria-hidden />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="mt-auto">
-                <TrackButton url={result.best.url} label="Track price & alerts" />
-              </div>
-            </li>
-          ))}
-        </ul>
+                <div className="mt-auto">
+                  <TrackButton url={result.best.url} label="Track price & alerts" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </>
   );
