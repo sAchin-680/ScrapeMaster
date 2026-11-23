@@ -199,10 +199,15 @@
 
 @utility btn-accent {
   @apply btn text-white hover:brightness-110;
-  background-image: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
+  /* Fixed deep tones keep white text above 4.5:1 contrast in both themes. */
+  background-image: linear-gradient(
+    135deg,
+    rgb(var(--button-from)),
+    rgb(var(--button-to))
+  );
   box-shadow:
     inset 0 1px 0 0 rgb(255 255 255 / 0.22),
-    0 8px 24px -10px rgb(var(--accent) / 0.7);
+    0 8px 24px -10px rgb(var(--button-from) / 0.7);
 }
 
 @utility btn-ghost {
@@ -344,6 +349,8 @@
     --up: 225 29 72;
     --down: 5 150 105;
     --shadow: 15 23 42;
+    --button-from: 79 70 229;
+    --button-to: 124 58 237;
     /* Strength of the white highlight along the top edge of panels. */
     --edge: 0.7;
     --aurora: 0.2;
@@ -365,6 +372,8 @@
       --up: 251 113 133;
       --down: 52 211 153;
       --shadow: 0 0 0;
+      --button-from: 79 70 229;
+      --button-to: 109 40 217;
       --edge: 0.06;
       --aurora: 0.22;
       color-scheme: dark;
