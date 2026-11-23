@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 function parts(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000));
@@ -12,16 +12,20 @@ function parts(ms: number) {
   };
 }
 
+function subscribeToSeconds(onTick: () => void) {
+  const timer = setInterval(onTick, 1_000);
+  return () => clearInterval(timer);
+}
+
+/** Current time rounded to the second, so repeated reads within a tick agree. */
+function currentSecond() {
+  return Math.floor(Date.now() / 1_000) * 1_000;
+}
+
 /** Ticking d/h/m/s countdown to a target date. */
 export default function Countdown({ to, className }: { to: string; className?: string }) {
   const target = Date.parse(to);
-  const [now, setNow] = useState<number | null>(null);
-
-  useEffect(() => {
-    setNow(Date.now());
-    const timer = setInterval(() => setNow(Date.now()), 1_000);
-    return () => clearInterval(timer);
-  }, []);
+  const now = useSyncExternalStore(subscribeToSeconds, currentSecond, () => null);
 
   // Render a stable placeholder on the server to avoid hydration mismatches.
   const { d, h, m, s } = parts(now === null ? 0 : target - now);
