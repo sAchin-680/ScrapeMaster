@@ -54,23 +54,26 @@
 
 ## Why ScrapeMaster
 
-A price chart alone does not tell you whether to buy. ScrapeMaster pairs every product's own history with a plain verdict, checks the same product across stores, and only counts a discount as real when it holds up against the store's own list price. It reads every store live, with no demo or seeded data.
+A price chart alone does not tell you whether to buy. ScrapeMaster pairs every product's own history with a plain verdict, checks the same product across stores, and only counts a discount as real when it holds up against the store's own list price. It reads every store live, with no demo or seeded data, and runs entirely on free tiers: the smart search and forecasts are plain code, not a paid AI service.
 
 ## Features
 
-|                                |                                                                                                                                       |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 🔎 **Live multi-store search** | Searches every store for your country in parallel, groups identical listings, and shows the cheapest one first.                       |
-| 🔗 **Any store**               | Dedicated adapters for Amazon and Flipkart. Any other shop works through its schema.org or OpenGraph product data. Paste any link.    |
-| 📈 **Price history**           | An interactive chart of every recorded price, with lowest, average and highest marked.                                                |
-| 🧭 **Buy-or-wait verdict**     | A "should you buy now?" score based on the product's own history, not the store's claims.                                             |
-| 🔔 **Alerts**                  | Emails on new lows, big discounts or restocks, each with one-click unsubscribe.                                                       |
-| 🏷️ **Honest deals**            | Live store discounts measured against each store's own list price. Listings claiming 70% or more off are skipped as likely inflated.  |
-| 📡 **Sale radar**              | Reads live sale banners from store homepages, plus a calendar of upcoming sales.                                                      |
-| ⚡ **Real time**               | Prices stream to open pages over Server-Sent Events. Stale products re-check in the background when someone views them.               |
-| 🌍 **Localized**               | Pick a country and currency; prices convert with daily exchange rates. Defaults to India and INR.                                     |
-| 🩺 **Visible reliability**     | Each store's success rate and last good refresh appear on the home page and at [`/status`](app/status/page.tsx).                      |
-| 🤝 **Responsible collection**  | Follows robots.txt, identifies itself honestly, rate-limits per site and prefers official data feeds. See [`/bot`](app/bot/page.tsx). |
+|                                |                                                                                                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🔎 **Live multi-store search** | Searches every store for your country in parallel, groups identical listings, and shows the cheapest one first.                                                   |
+| 🔗 **Any store**               | Dedicated adapters for Amazon and Flipkart. Any other shop works through its schema.org or OpenGraph product data. Paste any link.                                |
+| 💬 **Plain-language search**   | Type it like you'd say it: "5G phone under 20k", "cheapest air fryer", "earbuds around ₹2,000". Budgets and sort orders become filters, shown as removable chips. |
+| 📈 **Price history**           | An interactive chart of every recorded price, with lowest, average and highest marked.                                                                            |
+| 🧭 **Buy-or-wait outlook**     | A verdict from the product's own history plus a forecast: the recent trend, how often it dips lower, and upcoming sales on its store, each reason spelled out.    |
+| 🔔 **Alerts**                  | New lows, big discounts or restocks by email (one-click unsubscribe) or as notifications on your phone or desktop.                                                |
+| 🔖 **Watchlist and compare**   | Save products without an account, then compare two to four side by side with the best value in each row highlighted.                                              |
+| 📲 **Installable**             | Add ScrapeMaster to your home screen; it works like an app and receives price alerts.                                                                             |
+| 🏷️ **Honest deals**            | Live store discounts measured against each store's own list price. Listings claiming 70% or more off are skipped as likely inflated.                              |
+| 📡 **Sale radar**              | Reads live sale banners from store homepages, plus a calendar of upcoming sales.                                                                                  |
+| ⚡ **Real time**               | Prices stream to open pages over Server-Sent Events. Stale products re-check in the background when someone views them.                                           |
+| 🌍 **Localized**               | Pick a country and currency; prices convert with daily exchange rates. Defaults to India and INR.                                                                 |
+| 🩺 **Visible reliability**     | Each store's success rate and last good refresh appear on the home page and at [`/status`](app/status/page.tsx).                                                  |
+| 🤝 **Responsible collection**  | Follows robots.txt, identifies itself honestly, rate-limits per site and prefers official data feeds. See [`/bot`](app/bot/page.tsx).                             |
 
 ## Quick start
 
@@ -139,11 +142,12 @@ Every store request goes through `loadAndParse` (`lib/scraper/load.ts`):
 
 Measured on a production build with a throttled mid-range phone profile (4× CPU slowdown, slow 4G), median of three runs:
 
-| Page    | Largest Contentful Paint | Total Blocking Time | Layout shift |
-| ------- | ------------------------ | ------------------- | ------------ |
-| Home    | 1.8 s                    | 30 ms               | 0.010        |
-| Product | 1.6 s                    | 7 ms                | 0.001        |
-| Search  | 0.9 s                    | 17 ms               | 0.000        |
+| Page      | Largest Contentful Paint | Total Blocking Time | Layout shift |
+| --------- | ------------------------ | ------------------- | ------------ |
+| Home      | 1.8 s                    | 24 ms               | 0.010        |
+| Product   | 1.6 s                    | 7 ms                | 0.001        |
+| Search    | 1.0 s                    | 7 ms                | 0.000        |
+| Watchlist | 1.0 s                    | 5 ms                | 0.000        |
 
 All are inside Google's "good" thresholds (LCP ≤ 2.5 s, CLS ≤ 0.1). What keeps them there:
 
@@ -157,45 +161,63 @@ The palette's text colors meet WCAG AA contrast (4.5:1) in both themes, includin
 ## Project structure
 
 ```text
-app/                 Routes: home, search, products/[id], track, status, bot, legal pages
-  api/               stream (SSE), cron, health, suggest, unsubscribe, admin/sales
+app/                 Routes: home, search, products/[id], watchlist, compare, status, bot, legal pages
+  api/               stream (SSE), push, cron, health, suggest, unsubscribe, admin/sales
   globals.css        Design tokens and utilities: glass, aurora, glow, lift, card
 components/          UI: hero, product cards, charts, search, live price widgets
   live/              Client components fed by the SSE stream
+  watchlist/         Save buttons, watchlist counter and compare selection
+  push/              Service worker registration and the Notify me button
   ui/                Primitives: product tile, image, money, logo, sparkline
 lib/
+  search/            Plain-language query parsing and result filtering
+  forecast.ts        Buy-or-wait outlook from price history and the sale calendar
+  push/              Web Push sending and endpoint checks
   scraper/           Fetching, robots.txt, retries, circuit breakers, store adapters
   services/          Tracking, refresh, offers, store feeds, snapshots, source health
   data/              Server-side reads for pages
   models/            Mongoose schemas
 scripts/             refresh-feeds.mts, the scheduled refresh job
-tests/               Vitest unit tests (154)
+public/sw.js         Service worker: notifications, installability
+tests/               Vitest unit tests (187)
 ```
 
 ## Configuration
 
-| Variable                                                         | Purpose                                                 |
-| ---------------------------------------------------------------- | ------------------------------------------------------- |
-| `MONGODB_URI`                                                    | Database connection (required)                          |
-| `NEXT_PUBLIC_SITE_URL`                                           | Public URL for metadata and email links                 |
-| `APP_SECRET`                                                     | Signs unsubscribe links (required in production)        |
-| `CRON_SECRET`                                                    | Bearer token for `/api/cron`                            |
-| `ADMIN_TOKEN`                                                    | Bearer token for `/api/admin/sales`                     |
-| `CHROME_EXECUTABLE_PATH`                                         | Local Chrome/Chromium for browser-rendered stores       |
-| `BROWSER_WS_ENDPOINT`                                            | Remote browser (`ws://` or `wss://`) for serverless     |
-| `BROWSER_ON_REQUEST`                                             | Allow the web server itself to start a browser (Docker) |
-| `SMTP_HOST` `SMTP_PORT` `SMTP_USER` `SMTP_PASSWORD` `EMAIL_FROM` | Alert email delivery                                    |
-| `FLIPKART_AFFILIATE_ID` `FLIPKART_AFFILIATE_TOKEN`               | Flipkart search through its official Affiliate API      |
+| Variable                                                           | Purpose                                                 |
+| ------------------------------------------------------------------ | ------------------------------------------------------- |
+| `MONGODB_URI`                                                      | Database connection (required)                          |
+| `NEXT_PUBLIC_SITE_URL`                                             | Public URL for metadata and email links                 |
+| `APP_SECRET`                                                       | Signs unsubscribe links (required in production)        |
+| `CRON_SECRET`                                                      | Bearer token for `/api/cron`                            |
+| `ADMIN_TOKEN`                                                      | Bearer token for `/api/admin/sales`                     |
+| `CHROME_EXECUTABLE_PATH`                                           | Local Chrome/Chromium for browser-rendered stores       |
+| `BROWSER_WS_ENDPOINT`                                              | Remote browser (`ws://` or `wss://`) for serverless     |
+| `BROWSER_ON_REQUEST`                                               | Allow the web server itself to start a browser (Docker) |
+| `SMTP_HOST` `SMTP_PORT` `SMTP_USER` `SMTP_PASSWORD` `EMAIL_FROM`   | Alert email delivery                                    |
+| `FLIPKART_AFFILIATE_ID` `FLIPKART_AFFILIATE_TOKEN`                 | Flipkart search through its official Affiliate API      |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` `VAPID_PRIVATE_KEY` `VAPID_SUBJECT` | Device notifications through Web Push (free; see below) |
+
+### Device notifications
+
+Web Push is free: browsers deliver notifications through their own push services, and the site signs messages with a key pair you generate once.
+
+```bash
+npx web-push generate-vapid-keys
+```
+
+Set the public key as `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and the private key as `VAPID_PRIVATE_KEY` on your host, and add them as the `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` repository secrets for the refresh workflow, which sends the alerts. Set `VAPID_SUBJECT` in both places to a `mailto:` or `https:` contact. Without the keys, the Notify me button is hidden and everything else works as before.
 
 ## API
 
-| Endpoint                               | Auth                 | Description                          |
-| -------------------------------------- | -------------------- | ------------------------------------ |
-| `GET /api/stream?ids=`                 | Public               | SSE feed of product changes          |
-| `GET /api/cron`                        | `Bearer CRON_SECRET` | Refresh all products and send alerts |
-| `GET /api/health`                      | Public               | Database health check                |
-| `GET · POST · DELETE /api/admin/sales` | `Bearer ADMIN_TOKEN` | Manage sale events                   |
-| `POST /api/unsubscribe`                | Signed link          | One-click unsubscribe (RFC 8058)     |
+| Endpoint                               | Auth                       | Description                                    |
+| -------------------------------------- | -------------------------- | ---------------------------------------------- |
+| `GET /api/stream?ids=`                 | Public                     | SSE feed of product changes                    |
+| `GET /api/cron`                        | `Bearer CRON_SECRET`       | Refresh all products and send alerts           |
+| `GET /api/health`                      | Public                     | Database health check                          |
+| `GET · POST · DELETE /api/admin/sales` | `Bearer ADMIN_TOKEN`       | Manage sale events                             |
+| `POST /api/unsubscribe`                | Signed link                | One-click unsubscribe (RFC 8058)               |
+| `POST · DELETE /api/push`              | Browser push services only | Follow or stop following a product on a device |
 
 ## Deployment
 
