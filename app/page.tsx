@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import DealsSection from '@/components/DealsSection';
 import HashScroll from '@/components/HashScroll';
 import HeroVisual from '@/components/HeroVisual';
@@ -32,6 +33,13 @@ import { formatNumber } from '@/lib/utils';
 export const revalidate = 60;
 
 export const metadata: Metadata = { alternates: { canonical: '/' } };
+
+// Plain-language searches the search parser understands (lib/search/intent.ts).
+const EXAMPLE_SEARCHES = [
+  '5G phone under 20k',
+  'cheapest air fryer',
+  'earbuds around ₹2,000',
+];
 
 /** Streams in once store homepages have been checked for sale banners. */
 async function LiveSales({
@@ -129,6 +137,18 @@ export default async function Home() {
             <div className="mt-8 w-full max-w-xl">
               <Searchbar />
             </div>
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1.5 text-xs text-muted">
+              <span>Type it like you&rsquo;d say it:</span>
+              {EXAMPLE_SEARCHES.map((example) => (
+                <Link
+                  key={example}
+                  href={`/search?q=${encodeURIComponent(example)}`}
+                  className="rounded-full border border-line bg-surface/60 px-2.5 py-1 text-ink/80 transition hover:border-accent/40 hover:text-accent"
+                >
+                  {example}
+                </Link>
+              ))}
+            </p>
 
             <dl className="glass mt-8 grid w-full max-w-xl grid-cols-3 divide-x divide-line/70 rounded-2xl">
               {[
