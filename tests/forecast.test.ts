@@ -41,8 +41,19 @@ describe('forecastPrice', () => {
       NOW,
     )!;
     expect(f.advice).toBe('wait');
-    expect(f.headline).toBe('Likely to drop further');
+    // Today is the lowest so far, so the headline agrees with a "great deal" badge.
+    expect(f.headline).toBe('Lowest yet, and still falling');
+    expect(f.reasons[0]).toMatch(/^Falling about \d+% a week over the last 6 days\.$/);
     expect(f.weeklyTrend).toBeLessThan(-0.02);
+  });
+
+  it('says a fall above the low is likely to continue', () => {
+    const f = forecastPrice(
+      product([1400, 1350, 1300, 1250, 1200, 1150, 1100], { lowestPrice: 900 }),
+      [],
+      NOW,
+    )!;
+    expect(f.headline).toBe('Likely to drop further');
   });
 
   it('advises buying at the recorded low', () => {

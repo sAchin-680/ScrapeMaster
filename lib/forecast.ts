@@ -105,10 +105,11 @@ export function forecastPrice(
     if (recent.length >= 3) {
       weeklyTrend = (slopePerDay(recent) * 7) / input.currentPrice;
       const pct = Math.round(Math.abs(weeklyTrend) * 100);
-      if (weeklyTrend <= -0.02)
-        wait.push(`Falling about ${pct}% a week over the last month.`);
-      if (weeklyTrend >= 0.02)
-        buy.push(`Rising about ${pct}% a week over the last month.`);
+      // Name the span the trend really covers, which can be shorter than a month.
+      const days = Math.round((series[series.length - 1].t - recent[0].t) / DAY);
+      const span = days >= 28 ? 'the last month' : `the last ${days} days`;
+      if (weeklyTrend <= -0.02) wait.push(`Falling about ${pct}% a week over ${span}.`);
+      if (weeklyTrend >= 0.02) buy.push(`Rising about ${pct}% a week over ${span}.`);
     }
 
     const window = series.filter((p) => p.t >= now - DIP_WINDOW);
@@ -155,7 +156,10 @@ export function forecastPrice(
       : sale && !sale.live
         ? `Wait for ${sale.name}`
         : weeklyTrend !== undefined && weeklyTrend <= -0.02
-          ? 'Likely to drop further'
+          ? // Agree with the deal badge, which calls a record low a great deal.
+            input.currentPrice <= input.lowestPrice * 1.02
+            ? 'Lowest yet, and still falling'
+            : 'Likely to drop further'
           : 'Often cheaper than this';
 
   return {
