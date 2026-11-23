@@ -9,6 +9,7 @@ import { buildAnnouncements } from '@/lib/announcements';
 import { getActiveSales } from '@/lib/data/sales';
 import { getPriceSignals } from '@/lib/data/signals';
 import {
+  type CountryCode,
   CURRENCIES,
   DEFAULT_PREFERENCES,
   getCountry,
@@ -63,6 +64,19 @@ export const viewport: Viewport = {
   ],
 };
 
+type ActiveSales = Awaited<ReturnType<typeof getActiveSales>>;
+type PriceSignals = Awaited<ReturnType<typeof getPriceSignals>>;
+
+/** Banners for the announcement bar, read at request time rather than during render. */
+function siteAnnouncements(sales: ActiveSales, signals: PriceSignals, code: CountryCode) {
+  return buildAnnouncements(
+    filterSalesFor(sales, code, Date.now(), 21),
+    signals,
+    // peek() never blocks rendering; banners appear once the feed has loaded.
+    saleSignalFeed(regionForCountry(code)).peek()?.data.signals ?? [],
+  );
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -78,12 +92,7 @@ export default async function RootLayout({
       waves: [],
     }),
   ]);
-  // peek() never blocks rendering; banners appear once the feed has loaded.
-  const announcements = buildAnnouncements(
-    filterSalesFor(sales, country.code, Date.now(), 21),
-    signals,
-    saleSignalFeed(regionForCountry(country.code)).peek()?.data.signals ?? [],
-  );
+  const announcements = siteAnnouncements(sales, signals, country.code);
 
   return (
     <html lang="en" className={`${sans.variable} ${mono.variable}`}>
