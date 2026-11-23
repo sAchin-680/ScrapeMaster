@@ -165,10 +165,15 @@ export default async function ProductPage({ params }: Props) {
                       className="glow text-4xl font-semibold tracking-tight sm:text-5xl"
                     />
                     {savings > 0 && (
-                      <span className="num text-lg text-muted line-through">
+                      // Name the reference price so the discount is unambiguous.
+                      <span className="num text-lg text-muted">
+                        <span className="mr-1 text-xs">
+                          {product.currency.trim() === '₹' ? 'M.R.P.' : 'List price'}
+                        </span>
                         <Money
                           amount={product.originalPrice}
                           currency={product.currency}
+                          className="line-through"
                         />
                       </span>
                     )}
