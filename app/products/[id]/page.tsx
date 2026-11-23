@@ -26,6 +26,7 @@ import RelativeTime from '@/components/live/RelativeTime';
 import Money from '@/components/ui/Money';
 import ProductImage from '@/components/ui/ProductImage';
 import StatTile from '@/components/ui/StatTile';
+import SaveButton from '@/components/watchlist/SaveButton';
 import { getProductById, getSimilarProducts } from '@/lib/data/products';
 import { getSaleEvents, outlookFor } from '@/lib/data/outlook';
 import { getDealVerdict } from '@/lib/deal';
@@ -202,7 +203,10 @@ export default async function ProductPage({ params }: Props) {
                     )}
                   </p>
                 </div>
-                <RefreshButton productId={product._id} />
+                <div className="flex items-center gap-2">
+                  <SaveButton productId={product._id} variant="full" />
+                  <RefreshButton productId={product._id} />
+                </div>
               </div>
 
               <div className="mt-6 grid gap-3 sm:grid-cols-2">

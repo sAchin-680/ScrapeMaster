@@ -3,6 +3,7 @@ import LocaleSwitcher from '@/components/LocaleSwitcher';
 import MobileNav from '@/components/MobileNav';
 import { NAV_LINKS, REPO_URL } from '@/components/nav-links';
 import Logo from '@/components/ui/Logo';
+import WatchlistLink from '@/components/watchlist/WatchlistLink';
 
 export default function Navbar() {
   return (
@@ -32,6 +33,7 @@ export default function Navbar() {
           </ul>
           <div className="flex items-center gap-1 sm:gap-2">
             <LocaleSwitcher />
+            <WatchlistLink />
             <a
               href={REPO_URL}
               target="_blank"

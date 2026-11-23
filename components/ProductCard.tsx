@@ -3,6 +3,7 @@ import DealBadge from '@/components/DealBadge';
 import LivePrice from '@/components/live/LivePrice';
 import Money from '@/components/ui/Money';
 import ProductTile from '@/components/ui/ProductTile';
+import SaveButton from '@/components/watchlist/SaveButton';
 import Sparkline from '@/components/ui/Sparkline';
 import type { Product } from '@/types';
 import { getDealVerdict } from '@/lib/deal';
@@ -37,6 +38,7 @@ export default function ProductCard({
       reviews={product.reviewsCount}
       outOfStock={product.isOutOfStock}
       preload={preload}
+      corner={<SaveButton productId={product._id} />}
       price={
         <LivePrice
           productId={product._id}

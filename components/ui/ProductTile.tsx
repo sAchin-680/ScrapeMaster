@@ -28,6 +28,8 @@ type Props = {
   aside?: ReactNode;
   /** Rendered below the card link, e.g. action buttons. */
   actions?: ReactNode;
+  /** Control pinned to the top-right corner, outside the card's link. */
+  corner?: ReactNode;
   outOfStock?: boolean;
   preload?: boolean;
 };
@@ -51,6 +53,7 @@ export default function ProductTile(props: Props) {
     note,
     aside,
     actions,
+    corner,
     outOfStock,
     preload,
   } = props;
@@ -82,8 +85,8 @@ export default function ProductTile(props: Props) {
             name={store.name}
             className="absolute left-2 top-2 size-7 shadow-xs ring-black/5"
           />
-          {discount > 0 && (
-            <span className="num absolute right-2 top-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-xs">
+          {discount > 0 && !outOfStock && (
+            <span className="num absolute bottom-2 right-2 rounded-full bg-down px-2 py-0.5 text-[11px] font-semibold text-white shadow-xs">
               −{discount}%
             </span>
           )}
@@ -140,6 +143,7 @@ export default function ProductTile(props: Props) {
         </div>
       </Link>
       {actions && <div className="px-1.5 pb-1.5 pt-1">{actions}</div>}
+      {corner && <div className="absolute right-4 top-4">{corner}</div>}
     </article>
   );
 }
