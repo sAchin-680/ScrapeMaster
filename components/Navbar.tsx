@@ -9,9 +9,12 @@ export default function Navbar() {
     <header className="sticky top-3 z-40 mt-3">
       <div className="container">
         <nav
-          className="glass flex h-14 items-center justify-between rounded-2xl pl-4 pr-2"
+          className="relative isolate flex h-14 items-center justify-between rounded-2xl pl-4 pr-2"
           aria-label="Main"
         >
+          {/* The glass lives on its own layer: a backdrop-filter on the nav itself
+              would trap the menu's fixed backdrop and blur inside the bar. */}
+          <div className="glass absolute inset-0 -z-10 rounded-2xl" aria-hidden />
           <Link href="/" aria-label="ScrapeMaster home">
             <Logo />
           </Link>

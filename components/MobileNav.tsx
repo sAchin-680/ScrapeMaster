@@ -30,11 +30,11 @@ export default function MobileNav() {
 
           <PopoverBackdrop
             transition
-            className="fixed inset-0 top-16 z-30 bg-ink/20 backdrop-blur-[2px] transition duration-200 data-closed:opacity-0"
+            className="fixed inset-0 -z-20 bg-ink/20 backdrop-blur-[2px] transition duration-200 data-closed:opacity-0"
           />
           <PopoverPanel
             transition
-            className="absolute inset-x-0 top-full z-40 border-b border-line bg-surface shadow-xl transition duration-200 ease-out data-closed:-translate-y-2 data-closed:opacity-0"
+            className="glass-solid absolute inset-x-4 top-full z-40 mt-2 rounded-2xl transition duration-200 ease-out data-closed:-translate-y-2 data-closed:opacity-0"
           >
             <nav aria-label="Sections" className="container py-3">
               <ul className="flex flex-col">
