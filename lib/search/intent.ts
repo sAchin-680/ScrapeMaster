@@ -54,7 +54,7 @@ const PATTERNS: { re: RegExp; read: (m: RegExpMatchArray) => IntentFilter | null
     re: new RegExp(String.raw`(?:^|\s)(?:${AROUND_CUES})\s*(${AMOUNT})`, 'i'),
     read: (m) => {
       const value = amount(m[1]);
-      return value ? range(Math.round(value * 0.85), Math.round(value * 1.15)) : null;
+      return value ? range(Math.round(value * 0.75), Math.round(value * 1.25)) : null;
     },
   },
   {

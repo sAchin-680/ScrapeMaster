@@ -48,7 +48,7 @@ describe('parseSearchIntent', () => {
       min: 2000,
       max: 5000,
     });
-    expect(parse('earbuds around 2000')).toMatchObject({ min: 1700, max: 2300 });
+    expect(parse('earbuds around 2000')).toMatchObject({ min: 1500, max: 2500 });
     expect(parse('mixer grinder ₹3000')).toMatchObject({
       keywords: 'mixer grinder',
       max: 3000,
