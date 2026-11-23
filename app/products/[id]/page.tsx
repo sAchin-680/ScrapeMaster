@@ -27,12 +27,8 @@ import Money from '@/components/ui/Money';
 import ProductImage from '@/components/ui/ProductImage';
 import StatTile from '@/components/ui/StatTile';
 import { getProductById, getSimilarProducts } from '@/lib/data/products';
-import { getActiveSales } from '@/lib/data/sales';
+import { getSaleEvents, outlookFor } from '@/lib/data/outlook';
 import { getDealVerdict } from '@/lib/deal';
-import { forecastPrice, type SaleEvent } from '@/lib/forecast';
-import { getSaleStatus } from '@/lib/sales';
-import { regionFromCurrency } from '@/lib/scraper/stores';
-import { saleSignalFeed } from '@/lib/services/store-feed';
 import { refreshIfStale } from '@/lib/services/refresh';
 import { formatNumber, formatPrice, truncate } from '@/lib/utils';
 
@@ -67,37 +63,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-type ProductForOutlook = NonNullable<Awaited<ReturnType<typeof getProductById>>>;
-
-/**
- * Buy-or-wait outlook, read at request time rather than during render. Sales
- * come from the calendar plus live store banners; peek() reads the cached
- * banner feed without waiting, so the page never blocks on a store.
- */
-function productOutlook(
-  product: ProductForOutlook,
-  history: ProductForOutlook['priceHistory'],
-  calendar: Awaited<ReturnType<typeof getActiveSales>>,
-) {
-  const now = Date.now();
-  const saleEvents: SaleEvent[] = [
-    ...calendar.flatMap((sale) => {
-      const status = getSaleStatus(sale, now);
-      return status === 'ended'
-        ? []
-        : [{ name: sale.name, store: sale.store, status, start: Date.parse(sale.start) }];
-    }),
-    ...(saleSignalFeed(regionFromCurrency(product.currency)).peek()?.data.signals ?? [])
-      .filter((signal) => signal.status === 'live')
-      .map((signal) => ({
-        name: signal.text,
-        store: signal.store,
-        status: 'live' as const,
-      })),
-  ];
-  return forecastPrice({ ...product, priceHistory: history ?? [] }, saleEvents, now);
-}
-
 export default async function ProductPage({ params }: Props) {
   const { id } = await params;
   const product = await getProductById(id);
@@ -106,13 +71,13 @@ export default async function ProductPage({ params }: Props) {
   // Re-check stale prices after responding; the live stream pushes any change.
   after(() => refreshIfStale(id));
 
-  const [similar, calendar] = await Promise.all([
+  const [similar, sales] = await Promise.all([
     getSimilarProducts(id),
-    getActiveSales(),
+    getSaleEvents(product.currency),
   ]);
   const history = product.priceHistory ?? [];
   const verdict = getDealVerdict({ ...product, priceHistory: history });
-  const forecast = productOutlook(product, history, calendar);
+  const forecast = outlookFor(product, sales);
   // Send buyers to the cheapest matching listing, falling back to this one.
   const buyOffer = [...(product.offers ?? [])].sort((a, b) => a.price - b.price)[0] ?? {
     url: product.url,
