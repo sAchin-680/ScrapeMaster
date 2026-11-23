@@ -60,7 +60,7 @@ export default function TrackModal({
         <div className="fixed inset-0 flex items-end justify-center sm:items-center sm:p-4">
           <DialogPanel
             transition
-            className="card w-full max-w-md rounded-b-none p-6 shadow-2xl transition duration-300 ease-out data-closed:translate-y-8 data-closed:opacity-0 sm:rounded-2xl sm:data-closed:scale-95 sm:data-closed:translate-y-0"
+            className="glass-solid w-full max-w-md rounded-t-3xl rounded-b-none p-6 transition duration-300 ease-out data-closed:translate-y-8 data-closed:opacity-0 sm:rounded-3xl sm:data-closed:scale-95 sm:data-closed:translate-y-0"
           >
             <div className="flex items-start justify-between gap-4">
               <span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-ink">

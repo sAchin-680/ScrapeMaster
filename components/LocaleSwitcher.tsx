@@ -37,7 +37,7 @@ export default function LocaleSwitcher() {
       <PopoverPanel
         transition
         anchor={{ to: 'bottom end', gap: 8 }}
-        className="card z-50 w-[min(20rem,calc(100vw-2rem))] p-4 shadow-xl transition duration-150 data-closed:-translate-y-1 data-closed:opacity-0"
+        className="glass-solid z-50 w-[min(20rem,calc(100vw-2rem))] rounded-2xl p-4 transition duration-150 data-closed:-translate-y-1 data-closed:opacity-0"
       >
         {({ close }) => <LocaleForm close={close} />}
       </PopoverPanel>

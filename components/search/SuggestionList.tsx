@@ -48,7 +48,7 @@ export default function SuggestionList({
   const firstQuery = items.findIndex((i) => i.kind === 'query');
 
   return (
-    <div className="absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-xl border border-line bg-surface shadow-xl shadow-indigo-950/10">
+    <div className="glass-solid absolute inset-x-0 top-full z-40 mt-2 overflow-hidden rounded-2xl">
       {showingRecent && (
         <div className="flex items-center justify-between px-4 pb-1 pt-3 text-xs text-muted">
           <span>Recent searches</span>
