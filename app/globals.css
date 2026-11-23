@@ -346,8 +346,9 @@
     --accent-3: 14 165 233;
     --accent-ink: 255 255 255;
     --accent-soft: 238 240 255;
-    --up: 225 29 72;
-    --down: 5 150 105;
+    /* Rose-700 and emerald-700: at least 4.5:1 for small text, on tints too. */
+    --up: 190 18 60;
+    --down: 4 120 87;
     --shadow: 15 23 42;
     --button-from: 79 70 229;
     --button-to: 124 58 237;
