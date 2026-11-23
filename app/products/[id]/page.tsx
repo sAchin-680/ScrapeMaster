@@ -96,7 +96,7 @@ export default async function ProductPage({ params }: Props) {
         <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
           <div className="relative lg:sticky lg:top-24 lg:self-start">
             <div
-              className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
+              className="absolute -inset-3 -z-10 rounded-[2.5rem] md:-inset-6 bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
               aria-hidden
             />
             <div className="card relative aspect-square overflow-hidden rounded-3xl bg-white p-4">
