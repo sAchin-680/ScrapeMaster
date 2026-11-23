@@ -22,8 +22,10 @@ export default defineConfig({
         'lib/data/**',
       ],
       reporter: ['text-summary', 'lcov'],
-      // Guard against regressions; raise as coverage grows.
-      thresholds: { statements: 60, branches: 65, functions: 65, lines: 60 },
+      // Guard against regressions; raise as coverage grows. Vitest 4+ remaps
+      // V8 coverage through the AST, which counts ?., ?? and default
+      // parameters as branches, so these sit just under the new baseline.
+      thresholds: { statements: 65, branches: 60, functions: 65, lines: 68 },
     },
   },
 });
