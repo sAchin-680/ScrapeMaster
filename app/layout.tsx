@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import Footer from '@/components/Footer';
+import ServiceWorker from '@/components/push/ServiceWorker';
 import { PreferencesProvider } from '@/components/PreferencesProvider';
 import { getRates } from '@/lib/fx';
 import { buildAnnouncements } from '@/lib/announcements';
@@ -111,6 +112,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <ServiceWorker />
         </PreferencesProvider>
       </body>
     </html>
