@@ -28,6 +28,15 @@ const fields = {
   // Browser rendering for stores that block plain HTTP clients (e.g. Flipkart).
   CHROME_EXECUTABLE_PATH: z.string(),
   BROWSER_WS_ENDPOINT: z.url({ protocol: /^wss?$/ }),
+  // Web Push (free): a key pair from `npx web-push generate-vapid-keys`.
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z
+    .string()
+    .regex(/^[A-Za-z0-9_-]{80,}$/, 'not a VAPID key'),
+  VAPID_PRIVATE_KEY: z.string().regex(/^[A-Za-z0-9_-]{40,}$/, 'not a VAPID key'),
+  // Contact for push services, as mailto: or https: (required by the Web Push spec).
+  VAPID_SUBJECT: z
+    .string()
+    .regex(/^(mailto:|https:\/\/)/, 'must start with mailto: or https://'),
 };
 
 // Alternative names accepted for convenience (older or common spellings).
@@ -65,6 +74,9 @@ export const env = {
 
 export const isEmailConfigured = Boolean(
   env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASSWORD,
+);
+export const isPushConfigured = Boolean(
+  env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY,
 );
 export const isFlipkartAffiliateConfigured = Boolean(
   env.FLIPKART_AFFILIATE_ID && env.FLIPKART_AFFILIATE_TOKEN,
