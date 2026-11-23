@@ -104,7 +104,7 @@ export default async function Home() {
           aria-hidden
         />
 
-        <div className="container relative grid items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
+        <div className="container relative grid grid-cols-1 items-center gap-16 py-16 lg:grid-cols-[1.1fr_1fr] lg:py-24">
           <div className="flex animate-rise flex-col items-start">
             <div className="flex flex-wrap items-center gap-2">
               <LiveBadge />
