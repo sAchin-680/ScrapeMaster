@@ -25,7 +25,7 @@ async function TrendingContent({ region }: { region: Region }) {
           </p>
           <h2
             id="trending-heading"
-            className="mt-2 text-3xl font-semibold tracking-tight"
+            className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
           >
             Bestsellers on {SEARCHABLE_STORES[region].join(' & ')}
           </h2>

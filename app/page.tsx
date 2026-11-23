@@ -171,7 +171,7 @@ export default async function Home() {
               <p className="text-sm font-medium text-accent">
                 {country.flag} Price-tracked in {country.name}
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight">
+              <h2 className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
                 Recently tracked
               </h2>
             </div>

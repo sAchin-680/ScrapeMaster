@@ -180,7 +180,10 @@ export default function SalesSection({ country, sales, signals, checked }: Props
             <p className="inline-flex items-center gap-1.5 text-sm font-medium text-accent">
               <Radar className="size-4" aria-hidden /> {country.flag} Sale radar
             </p>
-            <h2 id="sales-heading" className="mt-2 text-3xl font-semibold tracking-tight">
+            <h2
+              id="sales-heading"
+              className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl"
+            >
               Big sales, live & upcoming
             </h2>
             <p className="mt-3 text-muted">

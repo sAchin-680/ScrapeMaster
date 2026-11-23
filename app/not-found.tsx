@@ -8,7 +8,7 @@ export default function NotFound() {
         <PackageX className="size-7 text-muted" aria-hidden />
       </span>
       <p className="num mt-6 text-sm text-muted">404</p>
-      <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+      <h1 className="mt-2 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">
         This product slipped off the radar
       </h1>
       <p className="mt-3 max-w-md text-muted">
