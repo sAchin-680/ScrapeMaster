@@ -94,8 +94,12 @@ export default async function ProductPage({ params }: Props) {
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-12">
-          <div className="lg:sticky lg:top-24 lg:self-start">
-            <div className="card relative aspect-square overflow-hidden bg-white p-4">
+          <div className="relative lg:sticky lg:top-24 lg:self-start">
+            <div
+              className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-linear-to-tr from-indigo-500/20 via-violet-500/10 to-sky-400/20 blur-3xl"
+              aria-hidden
+            />
+            <div className="card relative aspect-square overflow-hidden rounded-3xl bg-white p-4">
               <ProductImage
                 resize={800}
                 src={product.image}
@@ -144,7 +148,10 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </header>
 
-            <section className="card p-5 sm:p-6" aria-labelledby="price-heading">
+            <section
+              className="glass glow-border rounded-3xl p-5 sm:p-6"
+              aria-labelledby="price-heading"
+            >
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <p id="price-heading" className="eyebrow">
@@ -155,7 +162,7 @@ export default async function ProductPage({ params }: Props) {
                       productId={product._id}
                       price={product.currentPrice}
                       currency={product.currency}
-                      className="text-4xl font-semibold sm:text-5xl"
+                      className="glow text-4xl font-semibold tracking-tight sm:text-5xl"
                     />
                     {savings > 0 && (
                       <span className="num text-lg text-muted line-through">
@@ -209,7 +216,7 @@ export default async function ProductPage({ params }: Props) {
 
             <section
               aria-label="Price statistics"
-              className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line"
+              className="grid grid-cols-2 gap-px overflow-hidden rounded-3xl border border-line bg-line"
             >
               <StatTile
                 label="Current"
@@ -242,7 +249,10 @@ export default async function ProductPage({ params }: Props) {
               />
             </section>
 
-            <section className="card p-5 sm:p-6" aria-labelledby="history-heading">
+            <section
+              className="glass rounded-3xl p-5 sm:p-6"
+              aria-labelledby="history-heading"
+            >
               <div className="mb-4 flex items-center justify-between">
                 <h2 id="history-heading" className="eyebrow">
                   Price history
@@ -261,7 +271,7 @@ export default async function ProductPage({ params }: Props) {
                   {bullets.map((line, i) => (
                     <li key={i} className="flex gap-3">
                       <span
-                        className="mt-2.5 size-1.5 shrink-0 rounded-full bg-ink/40"
+                        className="mt-2.5 size-1.5 shrink-0 rounded-full bg-accent shadow-[0_0_8px] shadow-accent/60"
                         aria-hidden
                       />
                       {line}
