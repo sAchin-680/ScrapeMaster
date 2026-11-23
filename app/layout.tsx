@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import localFont from 'next/font/local';
+import { Geist, Geist_Mono } from 'next/font/google';
 import Navbar from '@/components/Navbar';
 import AnnouncementBar from '@/components/AnnouncementBar';
 import Footer from '@/components/Footer';
@@ -21,18 +21,19 @@ import { withTimeout } from '@/lib/utils/timeout';
 import { siteConfig } from '@/lib/site';
 import './globals.css';
 
-const sans = localFont({
-  src: './fonts/GeistVF.woff',
+// Self-hosted at build time as Latin-subset woff2.
+const sans = Geist({
+  subsets: ['latin'],
   variable: '--font-geist-sans',
-  weight: '100 900',
   display: 'swap',
 });
 
-const mono = localFont({
-  src: './fonts/GeistMonoVF.woff',
+// Used for a few small labels below the fold, so it is not preloaded.
+const mono = Geist_Mono({
+  subsets: ['latin'],
   variable: '--font-geist-mono',
-  weight: '100 900',
   display: 'swap',
+  preload: false,
 });
 
 export const metadata: Metadata = {
