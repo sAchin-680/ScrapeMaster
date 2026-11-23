@@ -27,7 +27,7 @@ const fields = {
   ADMIN_TOKEN: z.string().min(16, 'must be at least 16 characters'),
   // Browser rendering for stores that block plain HTTP clients (e.g. Flipkart).
   CHROME_EXECUTABLE_PATH: z.string(),
-  BROWSER_WS_ENDPOINT: z.string().url(),
+  BROWSER_WS_ENDPOINT: z.url({ protocol: /^wss?$/ }),
 };
 
 // Alternative names accepted for convenience (older or common spellings).

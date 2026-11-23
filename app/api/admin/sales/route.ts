@@ -14,7 +14,7 @@ const saleSchema = z
     countries: z.array(z.string().length(2).toUpperCase()).max(20).default([]),
     start: z.coerce.date(),
     end: z.coerce.date(),
-    url: z.string().url(),
+    url: z.url({ protocol: /^https?$/ }),
     tagline: z.string().max(160).default(''),
     confirmed: z.boolean().default(false),
   })
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const parsed = saleSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success)
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json({ error: z.flattenError(parsed.error) }, { status: 400 });
   await connectDB();
   const sale = await SaleModel.create(parsed.data);
   return NextResponse.json(sale, { status: 201 });

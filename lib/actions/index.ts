@@ -64,7 +64,7 @@ export async function openProduct(input: string): Promise<ActionResult<{ id: str
 
 const trackSchema = z.object({
   productId: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid product'),
-  email: z.string().trim().toLowerCase().email('Enter a valid email address'),
+  email: z.string().trim().toLowerCase().pipe(z.email('Enter a valid email address')),
 });
 
 export async function addUserEmailToProduct(
