@@ -21,6 +21,8 @@
   --color-line: rgb(var(--line));
 
   --color-accent: rgb(var(--accent));
+  --color-accent-2: rgb(var(--accent-2));
+  --color-accent-3: rgb(var(--accent-3));
   --color-accent-ink: rgb(var(--accent-ink));
   --color-accent-soft: rgb(var(--accent-soft));
 
@@ -34,11 +36,14 @@
   --radius-2xl: 1.25rem;
   --radius-3xl: 1.75rem;
 
+  --ease-spring: cubic-bezier(0.2, 0.8, 0.2, 1);
+
   --animate-ticker: ticker 40s linear infinite;
-  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-rise: rise 0.7s var(--ease-spring) both;
   --animate-draw: draw 2.4s cubic-bezier(0.6, 0, 0.2, 1) forwards;
   --animate-pulse-dot: pulseDot 1.6s ease-in-out infinite;
   --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
 
   @keyframes ticker {
     to {
@@ -48,11 +53,13 @@
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(12px);
+      transform: translateY(14px);
+      filter: blur(6px);
     }
     to {
       opacity: 1;
       transform: none;
+      filter: none;
     }
   }
   @keyframes draw {
@@ -74,6 +81,15 @@
       background-position: -200% 0;
     }
   }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
 }
 
 /* Borders without an explicit color use the theme's line color, in both themes. */
@@ -87,25 +103,87 @@
   }
 }
 
-@utility reveal {
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      animation: reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 35%;
-    }
+/* ---------------------------------------------------------------------------
+   Surfaces
+   --------------------------------------------------------------------------- */
+
+/* Translucent panel with an edge highlight. No backdrop blur, so long grids
+   of cards stay cheap to scroll. */
+@utility card {
+  border-radius: var(--radius-xl);
+  border: 1px solid rgb(var(--line));
+  background-color: rgb(var(--surface) / 0.84);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / var(--edge)),
+    0 1px 2px rgb(var(--shadow) / 0.05);
+}
+
+/* Frosted glass for floating chrome: navigation, popovers, hero panels. */
+@utility glass {
+  border: 1px solid rgb(var(--line) / 0.7);
+  background-color: rgb(var(--surface) / 0.62);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / var(--edge)),
+    0 1px 2px rgb(var(--shadow) / 0.05),
+    0 16px 40px -20px rgb(var(--accent) / 0.25);
+}
+
+/* Shared hover lift for interactive cards, with an accent halo. */
+@utility lift {
+  transition-property: transform, box-shadow, border-color;
+  transition-duration: 300ms;
+  transition-timing-function: var(--ease-spring);
+  &:hover {
+    transform: translateY(-4px);
+    border-color: rgb(var(--accent) / 0.35);
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / var(--edge)),
+      0 0 0 1px rgb(var(--accent) / 0.08),
+      0 24px 48px -24px rgb(var(--accent) / 0.45);
+  }
+  &:active {
+    transform: none;
+    transition-duration: 100ms;
   }
 }
 
-@utility page-enter {
-  /* Scroll-revealed content: pure CSS, off the main thread, progressive. */
-  animation: page-enter 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+/* Gradient border that turns while the element is hovered or focused. */
+@utility glow-border {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--angle),
+      rgb(var(--accent)),
+      rgb(var(--accent-2)),
+      rgb(var(--accent-3)),
+      rgb(var(--accent))
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+    animation: turn 4s linear infinite;
+    pointer-events: none;
+  }
+  &:hover::before,
+  &:focus-within::before {
+    opacity: 1;
+  }
 }
 
-@utility lift {
-  /* Shared hover lift for interactive cards. */
-  @apply transition-[transform,box-shadow,border-color] duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-950/[0.07] active:translate-y-0 active:duration-100;
-}
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
 
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition
@@ -114,33 +192,79 @@
 
 @utility btn-primary {
   @apply btn bg-ink text-paper hover:bg-ink/85;
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.14),
+    0 1px 2px rgb(var(--shadow) / 0.2);
 }
 
 @utility btn-accent {
-  @apply btn bg-accent text-accent-ink shadow-xs shadow-accent/30 hover:brightness-110;
+  @apply btn text-white hover:brightness-110;
+  background-image: linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)));
+  box-shadow:
+    inset 0 1px 0 0 rgb(255 255 255 / 0.22),
+    0 8px 24px -10px rgb(var(--accent) / 0.7);
 }
 
 @utility btn-ghost {
-  @apply btn border border-line bg-surface shadow-xs hover:bg-paper;
+  @apply btn border border-line bg-surface/70 shadow-xs hover:bg-surface hover:border-accent/30;
 }
 
-@utility card {
-  @apply rounded-xl border border-line bg-surface shadow-[0_1px_2px_rgb(0_0_0/.04)];
-}
+/* ---------------------------------------------------------------------------
+   Type and data
+   --------------------------------------------------------------------------- */
 
 @utility eyebrow {
   @apply text-xs font-medium text-muted;
+}
+
+/* Section label with a glowing accent dot. */
+@utility kicker {
+  @apply inline-flex items-center gap-2 text-sm font-medium text-accent;
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: currentColor;
+    box-shadow: 0 0 10px 1px rgb(var(--accent) / 0.6);
+  }
 }
 
 @utility num {
   @apply tabular-nums tracking-tight;
 }
 
+/* Slowly panning indigo, violet and sky gradient for headline text. */
+@utility text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    rgb(var(--accent)) 0%,
+    rgb(var(--accent-2)) 35%,
+    rgb(var(--accent-3)) 65%,
+    rgb(var(--accent)) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  color: transparent;
+  animation: pan 10s linear infinite;
+}
+
+/* Live figures glow softly on dark backgrounds; light mode stays crisp. */
+@utility glow {
+  @media (prefers-color-scheme: dark) {
+    text-shadow: 0 0 22px rgb(var(--accent) / 0.45);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Backgrounds and effects
+   --------------------------------------------------------------------------- */
+
 @utility dot-grid {
   background-image:
-    linear-gradient(rgb(var(--line) / 0.7) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(var(--line) / 0.7) 1px, transparent 1px);
-  background-size: 48px 48px;
+    linear-gradient(rgb(var(--line) / 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--line) / 0.55) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 
 @utility grain {
@@ -148,6 +272,29 @@
     content: '';
     @apply pointer-events-none absolute inset-0 opacity-[0.035] mix-blend-multiply;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* A light sweep that crosses the element on hover. */
+@utility shine {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgb(255 255 255 / 0.35) 50%,
+      transparent 60%
+    );
+    transform: translateX(-100%);
+    pointer-events: none;
+  }
+  &:hover::after {
+    transform: translateX(100%);
+    transition: transform 0.9s var(--ease-spring);
   }
 }
 
@@ -167,33 +314,59 @@
   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
 }
 
+@utility reveal {
+  /* Scroll-revealed content: pure CSS, off the main thread, progressive. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@utility page-enter {
+  animation: page-enter 0.35s var(--ease-spring) both;
+}
+
 @layer base {
   :root {
-    --paper: 250 250 250;
+    --paper: 247 248 252;
     --surface: 255 255 255;
-    --ink: 17 17 20;
-    --muted: 107 114 128;
-    --line: 229 231 235;
+    --ink: 12 14 28;
+    --muted: 100 108 130;
+    --line: 226 229 240;
     --accent: 79 70 229;
+    --accent-2: 139 92 246;
+    --accent-3: 14 165 233;
     --accent-ink: 255 255 255;
-    --accent-soft: 238 242 255;
+    --accent-soft: 238 240 255;
     --up: 225 29 72;
     --down: 5 150 105;
+    --shadow: 15 23 42;
+    /* Strength of the white highlight along the top edge of panels. */
+    --edge: 0.7;
+    --aurora: 0.2;
     color-scheme: light;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --paper: 9 9 11;
-      --surface: 19 19 22;
-      --ink: 244 244 245;
-      --muted: 161 161 170;
-      --line: 39 39 42;
+      --paper: 6 7 14;
+      --surface: 14 16 28;
+      --ink: 236 238 250;
+      --muted: 148 154 180;
+      --line: 36 40 62;
       --accent: 129 140 248;
-      --accent-ink: 9 9 11;
-      --accent-soft: 30 27 75;
+      --accent-2: 167 139 250;
+      --accent-3: 56 189 248;
+      --accent-ink: 8 9 20;
+      --accent-soft: 30 30 72;
       --up: 251 113 133;
       --down: 52 211 153;
+      --shadow: 0 0 0;
+      --edge: 0.06;
+      --aurora: 0.22;
       color-scheme: dark;
     }
   }
@@ -206,6 +379,34 @@
   body {
     @apply bg-paper font-sans text-ink antialiased;
     font-feature-settings: 'ss01', 'cv11';
+  }
+
+  /* Aurora: a slow-drifting field of accent light behind every page. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: -25vh -15vw auto;
+    height: 110vh;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        38% 34% at 18% 12%,
+        rgb(var(--accent) / var(--aurora)),
+        transparent 70%
+      ),
+      radial-gradient(
+        34% 30% at 82% 6%,
+        rgb(var(--accent-2) / var(--aurora)),
+        transparent 70%
+      ),
+      radial-gradient(
+        30% 28% at 58% 42%,
+        rgb(var(--accent-3) / calc(var(--aurora) * 0.6)),
+        transparent 70%
+      );
+    filter: blur(24px);
+    animation: aurora 26s ease-in-out infinite alternate;
   }
 
   ::selection {
@@ -225,6 +426,33 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes turn {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@keyframes pan {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes aurora {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4vw, 3vh, 0) scale(1.08);
   }
 }
 
