@@ -1,26 +1,34 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 import { Megaphone, X } from 'lucide-react';
 
 export type Announcement = { id: string; text: string; href?: string; cta?: string };
 
 const STORAGE_KEY = 'sm_announcements_dismissed';
 
+function subscribeToStorage(onChange: () => void) {
+  window.addEventListener('storage', onChange);
+  return () => window.removeEventListener('storage', onChange);
+}
+
+function readDismissed() {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    // Storage can be unavailable (private mode); the bar just stays visible.
+    return null;
+  }
+}
+
 /** Slim rotating bar for live sales and smart-shopping tips. */
 export default function AnnouncementBar({ items }: { items: Announcement[] }) {
   const [index, setIndex] = useState(0);
-  const [hidden, setHidden] = useState(false);
+  const [dismissedNow, setDismissedNow] = useState(false);
   const signature = items.map((i) => i.id).join('|');
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem(STORAGE_KEY) === signature) setHidden(true);
-    } catch {
-      // Storage can be unavailable (private mode); the bar just stays visible.
-    }
-  }, [signature]);
+  const dismissed = useSyncExternalStore(subscribeToStorage, readDismissed, () => null);
+  const hidden = dismissedNow || dismissed === signature;
 
   useEffect(() => {
     if (items.length < 2) return;
@@ -32,7 +40,7 @@ export default function AnnouncementBar({ items }: { items: Announcement[] }) {
   const item = items[index];
 
   const dismiss = () => {
-    setHidden(true);
+    setDismissedNow(true);
     try {
       localStorage.setItem(STORAGE_KEY, signature);
     } catch {}
