@@ -17,13 +17,39 @@ const cache = new Map<string, { at: number; value: Promise<SearchResponse> }>();
 
 export type SearchResponse = { results: SearchResult[]; failedStores: string[] };
 
-/** Share of the query's words that appear in a title. */
-function relevance(query: string, title: string) {
+// Words stores use in titles for common category searches. Listed explicitly:
+// substring matching would let "phone" match headphones and microphones.
+// ("phone", "smartphone" and "mobile" are left out: tokenize drops them.)
+const SYNONYM_WORDS: Record<string, string[]> = {
+  tv: ['television', 'smarttv'],
+  television: ['tv'],
+  laptop: ['notebook', 'macbook', 'chromebook'],
+  earbuds: ['earphones', 'tws', 'airpods', 'airdopes'],
+  earphones: ['earbuds', 'tws', 'airdopes'],
+  headphones: ['headset'],
+  watch: ['smartwatch'],
+  smartwatch: ['watch'],
+  fridge: ['refrigerator'],
+  refrigerator: ['fridge'],
+};
+
+// Keyed and valued by the stemmed tokens tokenize produces ("televis", "earbud").
+const stemOf = (word: string) => [...tokenize(word)][0] ?? word;
+const SYNONYMS = new Map(
+  Object.entries(SYNONYM_WORDS).map(([word, alts]) => [stemOf(word), alts.map(stemOf)]),
+);
+
+/** Share of the query's words that appear in a title, counting synonyms. */
+export function relevance(query: string, title: string) {
   const q = tokenize(query);
-  if (!q.size) return 0;
+  // Only generic words ("phone", "bluetooth"): nothing specific to check, so
+  // trust the store's own ranking instead of discarding every result.
+  if (!q.size) return 1;
   const t = tokenize(title);
   let hits = 0;
-  for (const token of q) if (t.has(token)) hits++;
+  for (const token of q) {
+    if (t.has(token) || SYNONYMS.get(token)?.some((alt) => t.has(alt))) hits++;
+  }
   return hits / q.size;
 }
 
